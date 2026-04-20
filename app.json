@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "scaffold",
-    "slug": "scaffold",
+    "name": "My Gallery",
+    "slug": "my-gallery-ablespace",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "scheme": "mygallery",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -13,7 +14,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "My Gallery uses the camera so you can capture images for your personal gallery.",
+        "NSPhotoLibraryUsageDescription": "My Gallery uses your photo library so you can choose images for your gallery.",
+        "NSMicrophoneUsageDescription": "My Gallery uses the microphone so you can dictate image captions.",
+        "NSSpeechRecognitionUsageDescription": "My Gallery uses speech recognition to turn your voice into captions."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,13 +28,37 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png",
+      "output": "single"
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "My Gallery uses the camera so you can capture images.",
+          "photosPermission": "My Gallery uses your photo library so you can choose images."
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "My Gallery uses the microphone so you can dictate captions.",
+          "speechRecognitionPermission": "My Gallery uses speech recognition to create captions from your voice.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ]
     ]
   }
 }
