@@ -6,7 +6,7 @@
 
 **Architecture:** The app uses Expo managed React Native with React Navigation. Screen components own UI flow, while small modules own persistence, filtering, auth configuration, voice capture, and sharing so they can be understood and tested independently.
 
-**Tech Stack:** Expo, React Native, TypeScript, React Navigation, AsyncStorage, Expo Image Picker, Expo AuthSession Google provider, Expo Sharing, Web Speech API, `@react-native-voice/voice`, Jest.
+**Tech Stack:** Expo, React Native, TypeScript, React Navigation, AsyncStorage, Expo Image Picker, Expo AuthSession Google provider, Expo Sharing, Web Speech API, `expo-speech-recognition`, Jest.
 
 ---
 
@@ -83,7 +83,7 @@ Run:
 
 ```bash
 npx expo install @react-native-async-storage/async-storage expo-auth-session expo-crypto expo-image-picker expo-sharing expo-web-browser react-native-safe-area-context react-native-screens
-npm install @react-navigation/native @react-navigation/native-stack @react-native-voice/voice
+npm install @react-navigation/native @react-navigation/native-stack expo-speech-recognition
 npm install --save-dev jest jest-expo @types/jest @testing-library/react-native react-test-renderer
 ```
 
@@ -467,7 +467,7 @@ git commit -m "feat: build gallery capture and detail flows"
 
 - [ ] **Step 1: Implement voice captions**
 
-Create a hook that uses Web Speech API on web and `@react-native-voice/voice` on iOS/Android. Return clear unsupported/permission messages and keep manual text input available.
+Create a hook that uses Web Speech API on web and `expo-speech-recognition` on iOS/Android. Return clear unsupported/permission messages and keep manual text input available.
 
 - [ ] **Step 2: Implement sharing**
 
