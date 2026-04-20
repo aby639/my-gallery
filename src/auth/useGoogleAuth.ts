@@ -2,7 +2,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useMemo, useState } from 'react';
 
-import { googleClientIds, hasGoogleClientId, missingGoogleClientMessage } from './authConfig';
+import { googleAuthRequestClientIds, hasGoogleClientId, missingGoogleClientMessage } from './authConfig';
 import { demoUser } from './demoUser';
 import { GalleryUser } from '../types/gallery';
 
@@ -23,7 +23,7 @@ type SignInResult = {
 export function useGoogleAuth() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [request, , promptAsync] = Google.useAuthRequest({
-    ...googleClientIds,
+    ...googleAuthRequestClientIds,
     scopes: ['openid', 'profile', 'email'],
     selectAccount: true,
   });

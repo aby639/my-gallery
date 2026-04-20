@@ -9,5 +9,17 @@ export const googleClientIds = {
 
 export const hasGoogleClientId = Object.values(googleClientIds).some(Boolean);
 
+type GoogleClientIds = Partial<typeof googleClientIds>;
+
+export function createGoogleAuthRequestClientIds(clientIds: GoogleClientIds) {
+  return {
+    androidClientId: clientIds.androidClientId ?? 'missing-android-client-id.apps.googleusercontent.com',
+    iosClientId: clientIds.iosClientId ?? 'missing-ios-client-id.apps.googleusercontent.com',
+    webClientId: clientIds.webClientId ?? 'missing-web-client-id.apps.googleusercontent.com',
+  };
+}
+
+export const googleAuthRequestClientIds = createGoogleAuthRequestClientIds(googleClientIds);
+
 export const missingGoogleClientMessage =
   'Google OAuth client IDs are not configured yet. Add the EXPO_PUBLIC_GOOGLE_* values from .env.example to enable real Google login.';
