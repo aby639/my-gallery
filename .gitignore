@@ -1,0 +1,18 @@
+﻿# Local brainstorming/session files
+.superpowers/
+
+# Dependencies and build output
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+
+# Environment files
+.env
+.env.local
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
