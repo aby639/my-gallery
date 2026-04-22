@@ -1,5 +1,10 @@
-import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import {
+  loadSpeechRecognitionPackage,
+  SpeechRecognitionPackage,
+  voiceNativeModuleUnavailableMessage,
+} from './speechRecognition';
 
 type UseVoiceCaptionOptions = {
   onResult: (text: string) => void;
@@ -8,45 +13,70 @@ type UseVoiceCaptionOptions = {
 export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
   const [isListening, setIsListening] = useState(false);
   const [message, setMessage] = useState<string>();
+  const speechRecognitionRef = useRef<SpeechRecognitionPackage | null>(null);
 
-  useSpeechRecognitionEvent('start', () => {
-    setIsListening(true);
-    setMessage('Listening...');
-  });
+  useEffect(() => {
+    const speechRecognition = loadSpeechRecognitionPackage();
+    speechRecognitionRef.current = speechRecognition;
 
-  useSpeechRecognitionEvent('end', () => {
-    setIsListening(false);
-  });
-
-  useSpeechRecognitionEvent('result', (event) => {
-    const transcript = event.results[0]?.transcript?.trim();
-
-    if (transcript) {
-      onResult(transcript);
-      setMessage(event.isFinal ? 'Caption captured.' : 'Listening...');
+    if (!speechRecognition) {
+      return undefined;
     }
-  });
 
-  useSpeechRecognitionEvent('error', (event) => {
-    setIsListening(false);
-    setMessage(event.message || 'Voice caption failed. You can still type the caption.');
-  });
+    const startListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('start', () => {
+      setIsListening(true);
+      setMessage('Listening...');
+    });
+    const endListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('end', () => {
+      setIsListening(false);
+    });
+    const resultListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('result', (event) => {
+      if (!('results' in event)) {
+        return;
+      }
+
+      const transcript = event.results[0]?.transcript?.trim();
+
+      if (transcript) {
+        onResult(transcript);
+        setMessage(event.isFinal ? 'Caption captured.' : 'Listening...');
+      }
+    });
+    const errorListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('error', (event) => {
+      setIsListening(false);
+      setMessage(('message' in event && event.message) || 'Voice caption failed. You can still type the caption.');
+    });
+
+    return () => {
+      startListener.remove();
+      endListener.remove();
+      resultListener.remove();
+      errorListener.remove();
+    };
+  }, [onResult]);
 
   const startListening = useCallback(async () => {
+    const speechRecognition = speechRecognitionRef.current;
+
+    if (!speechRecognition) {
+      setMessage(voiceNativeModuleUnavailableMessage);
+      return;
+    }
+
     try {
-      if (!ExpoSpeechRecognitionModule.isRecognitionAvailable()) {
+      if (!speechRecognition.ExpoSpeechRecognitionModule.isRecognitionAvailable()) {
         setMessage('Voice captions are not available on this device. Type the caption instead.');
         return;
       }
 
-      const permission = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      const permission = await speechRecognition.ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
       if (!permission.granted) {
         setMessage('Microphone permission was denied. Type the caption instead.');
         return;
       }
 
-      ExpoSpeechRecognitionModule.start({
+      speechRecognition.ExpoSpeechRecognitionModule.start({
         addsPunctuation: true,
         continuous: false,
         interimResults: true,
@@ -61,7 +91,7 @@ export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
   }, []);
 
   const stopListening = useCallback(() => {
-    ExpoSpeechRecognitionModule.stop();
+    speechRecognitionRef.current?.ExpoSpeechRecognitionModule.stop();
     setIsListening(false);
   }, []);
 
