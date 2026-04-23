@@ -13,7 +13,7 @@ import { SearchBar } from '../components/SearchBar';
 import { StatusBanner } from '../components/StatusBanner';
 import { filterGalleryItems } from '../gallery/filterGalleryItems';
 import { loadGalleryItems, ThemePreference } from '../storage/galleryStorage';
-import { getAppTheme } from '../theme/theme';
+import { AppTheme, getAppTheme } from '../theme/theme';
 import { GalleryItem, GalleryUser, RootStackParamList } from '../types/gallery';
 import { getPersistableImageUri } from '../utils/imageAssets';
 
@@ -104,6 +104,8 @@ export function GalleryScreen({
 
   const filteredItems = filterGalleryItems(items, searchText);
   const hasSearch = searchText.trim().length > 0;
+  const cameraCount = items.filter((item) => item.source === 'camera').length;
+  const libraryCount = items.length - cameraCount;
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
@@ -120,13 +122,19 @@ export function GalleryScreen({
           <View style={styles.titleText}>
             <Text style={[styles.title, { color: theme.colors.text }]}>Gallery</Text>
             <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
-              {items.length} saved {items.length === 1 ? 'image' : 'images'} · Local-first and ready offline
+              Private, searchable memories that stay ready offline
             </Text>
           </View>
           <View style={styles.actionRow}>
             <PrimaryButton label="Camera" onPress={openCamera} theme={theme} variant="secondary" />
             <PrimaryButton label="Add image" onPress={openPicker} theme={theme} />
           </View>
+        </View>
+
+        <View style={styles.statsRow}>
+          <StatPill label="Saved" theme={theme} value={items.length.toString()} />
+          <StatPill label="Camera" theme={theme} value={cameraCount.toString()} />
+          <StatPill label="Library" theme={theme} value={libraryCount.toString()} />
         </View>
 
         <SearchBar onChangeText={setSearchText} theme={theme} value={searchText} />
@@ -155,6 +163,30 @@ export function GalleryScreen({
   );
 }
 
+type StatPillProps = {
+  label: string;
+  theme: AppTheme;
+  value: string;
+};
+
+function StatPill({ label, theme, value }: StatPillProps) {
+  return (
+    <View
+      style={[
+        styles.statPill,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          borderRadius: theme.radius.md,
+        },
+      ]}
+    >
+      <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color: theme.colors.muted }]}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
@@ -172,6 +204,30 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0,
+    textTransform: 'uppercase',
+  },
+  statPill: {
+    borderWidth: 1,
+    flex: 1,
+    gap: 2,
+    minWidth: 92,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  statValue: {
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   subtitle: {
     fontSize: 14,

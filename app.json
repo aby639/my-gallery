@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Gallery",
     "slug": "my-gallery-ablespace",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "mygallery",
@@ -14,15 +14,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.ablespace.mygallery",
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "My Gallery uses the camera so you can capture images for your personal gallery.",
         "NSPhotoLibraryUsageDescription": "My Gallery uses your photo library so you can choose images for your gallery.",
-        "NSMicrophoneUsageDescription": "My Gallery uses the microphone so you can dictate image captions.",
-        "NSSpeechRecognitionUsageDescription": "My Gallery uses speech recognition to turn your voice into captions."
+        "NSMicrophoneUsageDescription": "My Gallery uses the microphone so you can dictate captions.",
+        "NSSpeechRecognitionUsageDescription": "My Gallery uses speech recognition to create captions from your voice."
       }
     },
     "android": {
+      "package": "com.ablespace.mygallery",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -33,7 +35,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_MEDIA_IMAGES"
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -59,6 +62,18 @@
           ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5af2c1fa-ebba-4a1f-a10f-1dc17e73741e"
+      }
+    },
+    "owner": "aby369",
+    "updates": {
+      "url": "https://u.expo.dev/5af2c1fa-ebba-4a1f-a10f-1dc17e73741e",
+      "requestHeaders": {
+        "expo-channel-name": "preview"
+      }
+    }
   }
 }

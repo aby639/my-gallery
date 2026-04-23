@@ -14,7 +14,7 @@ type NavigatorWithShare = Navigator & {
 };
 
 export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> {
-  const message = `${item.caption || 'My Gallery image'}\n${item.imageUri}`;
+  const caption = item.caption || 'My Gallery image';
 
   try {
     if (Platform.OS === 'web') {
@@ -22,7 +22,7 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
 
       if (navigatorWithShare?.share) {
         await navigatorWithShare.share({
-          text: item.caption || 'My Gallery image',
+          text: caption,
           title: 'My Gallery',
           url: item.imageUri,
         });
@@ -30,28 +30,53 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
       }
 
       if (navigatorWithShare?.clipboard?.writeText) {
-        await navigatorWithShare.clipboard.writeText(message);
+        await navigatorWithShare.clipboard.writeText(`${caption}\n${item.imageUri}`);
         return { message: 'Sharing is not available here, so the caption and image link were copied.', tone: 'info' };
       }
 
       return { message: 'Sharing is not supported in this browser.', tone: 'error' };
     }
 
-    await Share.share({
-      message,
-      title: 'My Gallery',
-      url: item.imageUri,
-    });
-
-    return { message: 'Share sheet opened.', tone: 'success' };
-  } catch {
     if (await ExpoSharing.isAvailableAsync()) {
       await ExpoSharing.shareAsync(item.imageUri, {
-        dialogTitle: item.caption || 'My Gallery',
+        dialogTitle: caption,
+        mimeType: getImageMimeType(item.imageUri),
+        UTI: getImageUti(item.imageUri),
       });
       return { message: 'Image share sheet opened.', tone: 'success' };
     }
 
+    await Share.share({
+      message: caption,
+      title: 'My Gallery',
+    });
+
+    return { message: 'Caption share sheet opened. Image sharing is not available on this device.', tone: 'info' };
+  } catch {
     return { message: 'Sharing is not available on this device.', tone: 'error' };
   }
+}
+
+function getImageMimeType(uri: string): string {
+  const normalizedUri = uri.toLowerCase();
+
+  if (normalizedUri.includes('image/png') || normalizedUri.endsWith('.png')) {
+    return 'image/png';
+  }
+
+  if (normalizedUri.endsWith('.webp')) {
+    return 'image/webp';
+  }
+
+  return 'image/jpeg';
+}
+
+function getImageUti(uri: string): string {
+  const mimeType = getImageMimeType(uri);
+
+  if (mimeType === 'image/png') {
+    return 'public.png';
+  }
+
+  return 'public.jpeg';
 }

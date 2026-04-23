@@ -9,6 +9,7 @@ import { StatusBanner } from '../components/StatusBanner';
 import { loadGalleryItems, saveGalleryItems, ThemePreference } from '../storage/galleryStorage';
 import { getAppTheme } from '../theme/theme';
 import { GalleryItem, RootStackParamList } from '../types/gallery';
+import { persistImageForGallery } from '../utils/imageAssets';
 import { useVoiceCaption } from '../voice/useVoiceCaption';
 
 type AddItemScreenProps = NativeStackScreenProps<RootStackParamList, 'AddItem'> & {
@@ -33,12 +34,14 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
     }
 
     setIsSaving(true);
+    const id = Crypto.randomUUID();
+    const imageUri = await persistImageForGallery(route.params.imageUri, id);
     const existingItems = await loadGalleryItems();
     const nextItem: GalleryItem = {
-      id: Crypto.randomUUID(),
+      id,
       caption: trimmedCaption,
       createdAt: new Date().toISOString(),
-      imageUri: route.params.imageUri,
+      imageUri,
       source: route.params.source,
     };
 

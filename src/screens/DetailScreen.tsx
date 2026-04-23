@@ -10,6 +10,7 @@ import { StatusBanner } from '../components/StatusBanner';
 import { loadGalleryItems, saveGalleryItems, ThemePreference } from '../storage/galleryStorage';
 import { getAppTheme } from '../theme/theme';
 import { GalleryItem, RootStackParamList } from '../types/gallery';
+import { deletePersistedGalleryImage } from '../utils/imageAssets';
 import { shareGalleryItem } from '../utils/shareGalleryItem';
 
 type DetailScreenProps = NativeStackScreenProps<RootStackParamList, 'Detail'> & {
@@ -59,6 +60,7 @@ export function DetailScreen({ navigation, route, themePreference }: DetailScree
 
     const items = await loadGalleryItems();
     await saveGalleryItems(items.filter((candidate) => candidate.id !== item.id));
+    deletePersistedGalleryImage(item.imageUri);
     navigation.navigate('Gallery');
   };
 
@@ -119,10 +121,13 @@ export function DetailScreen({ navigation, route, themePreference }: DetailScree
             ]}
             value={caption}
           />
+          <Text style={[styles.shareHint, { color: theme.colors.muted }]}>
+            Share sends the saved image file, not a local path.
+          </Text>
           <StatusBanner message={status?.message} theme={theme} tone={status?.tone} />
           <View style={styles.actions}>
             <PrimaryButton label="Save caption" onPress={saveCaption} theme={theme} />
-            <PrimaryButton label="Share" onPress={shareItem} theme={theme} variant="secondary" />
+            <PrimaryButton label="Share image" onPress={shareItem} theme={theme} variant="secondary" />
             <PrimaryButton label="Delete" onPress={deleteItem} theme={theme} variant="danger" />
           </View>
         </View>
@@ -167,6 +172,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '800',
+  },
+  shareHint: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   meta: {
     fontSize: 13,

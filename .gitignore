@@ -9,6 +9,11 @@ web-build/
 coverage/
 *.log
 agent-browser-*.png
+*.keystore
+*.jks
+*.p12
+*.pem
+android/local.properties
 
 # Environment files
 .env

@@ -1,4 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,15 +18,22 @@ type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'> & {
 export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
   const theme = getAppTheme(themePreference);
   const { authWarning, canUseGoogle, isSigningIn, signInDemo, signInWithGoogle } = useGoogleAuth();
+  const showDemoFallback = __DEV__ || Boolean(authWarning);
+  const [authError, setAuthError] = useState<string | undefined>();
 
   const handleGoogleSignIn = async () => {
+    setAuthError(undefined);
     const result = await signInWithGoogle();
     if (result.user) {
       await onSignIn(result.user);
+      return;
     }
+
+    setAuthError(result.error);
   };
 
   const handleDemoSignIn = async () => {
+    setAuthError(undefined);
     const result = await signInDemo();
     if (result.user) {
       await onSignIn(result.user);
@@ -39,11 +47,12 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
           <Text style={[styles.brand, { color: theme.colors.text }]}>My Gallery</Text>
           <Text style={[styles.headline, { color: theme.colors.text }]}>Save the photo. Keep the sentence.</Text>
           <Text style={[styles.body, { color: theme.colors.muted }]}>
-            A local-first gallery for images, voice captions, quick search, and sharing.
+            Sign in with Google, save images, dictate captions, search quickly, and share the moments that matter.
           </Text>
         </View>
 
         <View style={styles.actions}>
+          <StatusBanner message={authError} theme={theme} tone="error" />
           <StatusBanner message={authWarning} theme={theme} tone="info" />
           <PrimaryButton
             disabled={!canUseGoogle || isSigningIn}
@@ -52,16 +61,22 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
             onPress={handleGoogleSignIn}
             theme={theme}
           />
-          <PrimaryButton
-            fullWidth
-            label="Use demo profile"
-            onPress={handleDemoSignIn}
-            theme={theme}
-            variant="secondary"
-          />
-          <Text style={[styles.note, { color: theme.colors.muted }]}>
-            Demo mode keeps the reviewer flow available until OAuth client IDs are added.
-          </Text>
+          {showDemoFallback ? (
+            <>
+              <PrimaryButton
+                fullWidth
+                label="Use demo profile"
+                onPress={handleDemoSignIn}
+                theme={theme}
+                variant="secondary"
+              />
+              <Text style={[styles.note, { color: theme.colors.muted }]}>
+                {authWarning
+                  ? 'Review fallback only. Add Google OAuth IDs to enable the required sign-in path.'
+                  : 'Development fallback only. The required flow is Continue with Google.'}
+              </Text>
+            </>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
