@@ -68,6 +68,12 @@ This app currently:
 
 Before production, publish a real privacy policy URL and keep it consistent with the final feature set.
 
+Suggested app config:
+
+```env
+EXPO_PUBLIC_PRIVACY_POLICY_URL=https://your-hosted-policy-url
+```
+
 ## Data Safety Draft
 
 Data collected:

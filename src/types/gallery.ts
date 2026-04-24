@@ -29,4 +29,5 @@ export type RootStackParamList = {
     itemId: string;
   };
   Settings: undefined;
+  PrivacyPolicy: undefined;
 };

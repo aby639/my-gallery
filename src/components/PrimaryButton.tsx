@@ -6,6 +6,8 @@ type PrimaryButtonProps = {
   label: string;
   onPress: () => void;
   theme: AppTheme;
+  accessibilityHint?: string;
+  accessibilityLabel?: string;
   disabled?: boolean;
   fullWidth?: boolean;
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -13,6 +15,8 @@ type PrimaryButtonProps = {
 };
 
 export function PrimaryButton({
+  accessibilityHint,
+  accessibilityLabel,
   label,
   onPress,
   theme,
@@ -33,6 +37,8 @@ export function PrimaryButton({
 
   return (
     <Pressable
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole="button"
       disabled={disabled}
       onPress={onPress}

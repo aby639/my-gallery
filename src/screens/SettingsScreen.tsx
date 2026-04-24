@@ -3,7 +3,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
 import * as Updates from 'expo-updates';
 import { useCallback, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '../components/PrimaryButton';
@@ -71,9 +71,23 @@ export function SettingsScreen({
     await onSignOut();
   };
 
-  const appVersion = Constants.expoConfig?.version ?? '1.0.2';
+  const appVersion = Constants.expoConfig?.version ?? '1.1.0';
   const releaseChannel = Updates.channel ?? 'preview';
   const runtimeVersion = Updates.runtimeVersion ?? '1.0.0';
+  const hostedPrivacyPolicyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL?.trim();
+
+  const handleOpenPrivacyPolicy = async () => {
+    if (hostedPrivacyPolicyUrl) {
+      const canOpen = await Linking.canOpenURL(hostedPrivacyPolicyUrl);
+
+      if (canOpen) {
+        await Linking.openURL(hostedPrivacyPolicyUrl);
+        return;
+      }
+    }
+
+    navigation.navigate('PrivacyPolicy');
+  };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
@@ -114,6 +128,13 @@ export function SettingsScreen({
             Google is used for sign-in only. Camera, photo library, microphone, and speech recognition permissions are
             requested only when you use those features.
           </Text>
+          <PrimaryButton
+            label="Privacy policy"
+            onPress={handleOpenPrivacyPolicy}
+            theme={theme}
+            variant="secondary"
+            accessibilityHint="Open the app privacy policy"
+          />
           <PrimaryButton label="Clear local gallery" onPress={handleClearGallery} theme={theme} variant="danger" />
         </SectionCard>
 

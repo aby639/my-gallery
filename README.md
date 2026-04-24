@@ -68,6 +68,7 @@ Add Google OAuth client IDs:
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your-web-client-id
 EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=your-ios-client-id
 EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=your-android-client-id
+EXPO_PUBLIC_PRIVACY_POLICY_URL=https://your-hosted-policy-url
 ```
 
 Start Expo:
@@ -141,6 +142,7 @@ npm run update:production -- --message "Short update note"
 EAS Update is for compatible JavaScript, UI, copy, and asset changes. Build a new APK/AAB when native code, permissions, native packages, Expo SDK version, Google native auth setup, or runtime version changes.
 
 More detail lives in [Release and product plan](docs/release-and-product-plan.md).
+Recent shipping notes live in [Changelog](CHANGELOG.md).
 
 ## Product Roadmap
 

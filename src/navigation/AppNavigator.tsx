@@ -8,6 +8,7 @@ import { AddItemScreen } from '../screens/AddItemScreen';
 import { DetailScreen } from '../screens/DetailScreen';
 import { GalleryScreen } from '../screens/GalleryScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { PrivacyPolicyScreen } from '../screens/PrivacyPolicyScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -58,6 +59,9 @@ export function AppNavigator({
                   user={user}
                 />
               )}
+            </Stack.Screen>
+            <Stack.Screen name="PrivacyPolicy">
+              {(props) => <PrivacyPolicyScreen {...props} themePreference={themePreference} />}
             </Stack.Screen>
           </>
         ) : (

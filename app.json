@@ -2,7 +2,7 @@
   "expo": {
     "name": "My Gallery",
     "slug": "my-gallery-ablespace",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "mygallery",
@@ -36,6 +36,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_MEDIA_IMAGES"
       ],
+      "versionCode": 3,
       "runtimeVersion": "1.0.0"
     },
     "web": {
