@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../components/EmptyState';
@@ -11,29 +11,24 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { ProfileHeader } from '../components/ProfileHeader';
 import { SearchBar } from '../components/SearchBar';
 import { StatusBanner } from '../components/StatusBanner';
-import { filterGalleryItems } from '../gallery/filterGalleryItems';
+import { collectGalleryTags, filterGalleryItems } from '../gallery/filterGalleryItems';
 import { loadGalleryItems, ThemePreference } from '../storage/galleryStorage';
 import { AppTheme, getAppTheme } from '../theme/theme';
-import { GalleryItem, GalleryUser, RootStackParamList } from '../types/gallery';
+import { GalleryFilter, GalleryItem, GalleryUser, RootStackParamList } from '../types/gallery';
 import { getPersistableImageUri } from '../utils/imageAssets';
 
 type GalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'Gallery'> & {
   user: GalleryUser;
   themePreference: ThemePreference;
-  onSignOut: () => Promise<void>;
   onToggleTheme: () => void;
 };
 
-export function GalleryScreen({
-  navigation,
-  onSignOut,
-  onToggleTheme,
-  themePreference,
-  user,
-}: GalleryScreenProps) {
+export function GalleryScreen({ navigation, onToggleTheme, themePreference, user }: GalleryScreenProps) {
   const theme = getAppTheme(themePreference);
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [activeFilter, setActiveFilter] = useState<GalleryFilter>('all');
+  const [activeTag, setActiveTag] = useState<string>();
   const [status, setStatus] = useState<{ message: string; tone: 'info' | 'error' | 'success' }>();
 
   const loadItems = useCallback(async () => {
@@ -74,7 +69,10 @@ export function GalleryScreen({
 
   const openCamera = async () => {
     if (Platform.OS === 'web') {
-      setStatus({ message: 'Camera capture depends on browser support. Use the image picker if it is unavailable.', tone: 'info' });
+      setStatus({
+        message: 'Camera capture depends on browser support. Use the image picker if it is unavailable.',
+        tone: 'info',
+      });
     }
 
     const permission = await ImagePicker.requestCameraPermissionsAsync();
@@ -102,16 +100,28 @@ export function GalleryScreen({
     });
   };
 
-  const filteredItems = filterGalleryItems(items, searchText);
+  const filteredItems = filterGalleryItems(items, searchText, activeFilter, activeTag);
   const hasSearch = searchText.trim().length > 0;
-  const cameraCount = items.filter((item) => item.source === 'camera').length;
-  const libraryCount = items.length - cameraCount;
+  const hasRefinements = hasSearch || activeFilter !== 'all' || Boolean(activeTag);
+  const favoriteCount = items.filter((item) => item.isFavorite).length;
+  const taggedCount = items.filter((item) => (item.tags?.length ?? 0) > 0).length;
+  const topTags = collectGalleryTags(items, 6);
+  const visibleTags =
+    activeTag && !topTags.some((tag) => tag.toLowerCase() === activeTag.toLowerCase())
+      ? [activeTag, ...topTags].slice(0, 6)
+      : topTags;
+
+  const clearRefinements = () => {
+    setSearchText('');
+    setActiveFilter('all');
+    setActiveTag(undefined);
+  };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
       <View style={styles.page}>
         <ProfileHeader
-          onSignOut={onSignOut}
+          onOpenSettings={() => navigation.navigate('Settings')}
           onToggleTheme={onToggleTheme}
           theme={theme}
           themePreference={themePreference}
@@ -122,7 +132,7 @@ export function GalleryScreen({
           <View style={styles.titleText}>
             <Text style={[styles.title, { color: theme.colors.text }]}>Gallery</Text>
             <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
-              Private, searchable memories that stay ready offline
+              Save fewer photos, remember more context, and keep your useful visuals ready offline.
             </Text>
           </View>
           <View style={styles.actionRow}>
@@ -133,25 +143,70 @@ export function GalleryScreen({
 
         <View style={styles.statsRow}>
           <StatPill label="Saved" theme={theme} value={items.length.toString()} />
-          <StatPill label="Camera" theme={theme} value={cameraCount.toString()} />
-          <StatPill label="Library" theme={theme} value={libraryCount.toString()} />
+          <StatPill label="Favorites" theme={theme} value={favoriteCount.toString()} />
+          <StatPill label="Tagged" theme={theme} value={taggedCount.toString()} />
         </View>
 
         <SearchBar onChangeText={setSearchText} theme={theme} value={searchText} />
+
+        <View style={styles.filterRow}>
+          <FilterChip active={activeFilter === 'all'} label="All" onPress={() => setActiveFilter('all')} theme={theme} />
+          <FilterChip
+            active={activeFilter === 'favorites'}
+            label="Favorites"
+            onPress={() => setActiveFilter('favorites')}
+            theme={theme}
+          />
+          <FilterChip
+            active={activeFilter === 'camera'}
+            label="Camera"
+            onPress={() => setActiveFilter('camera')}
+            theme={theme}
+          />
+          <FilterChip
+            active={activeFilter === 'library'}
+            label="Library"
+            onPress={() => setActiveFilter('library')}
+            theme={theme}
+          />
+        </View>
+
+        {visibleTags.length ? (
+          <View style={styles.tagsSection}>
+            <Text style={[styles.tagsLabel, { color: theme.colors.muted }]}>Quick tags</Text>
+            <View style={styles.tagsRow}>
+              {visibleTags.map((tag) => (
+                <FilterChip
+                  key={tag}
+                  active={activeTag?.toLowerCase() === tag.toLowerCase()}
+                  label={tag}
+                  onPress={() =>
+                    setActiveTag((current) => (current?.toLowerCase() === tag.toLowerCase() ? undefined : tag))
+                  }
+                  theme={theme}
+                />
+              ))}
+              {hasRefinements ? (
+                <FilterChip active={false} label="Clear filters" onPress={clearRefinements} theme={theme} />
+              ) : null}
+            </View>
+          </View>
+        ) : null}
+
         <StatusBanner message={status?.message} theme={theme} tone={status?.tone} />
 
         <GalleryGrid
           ListEmptyComponent={
             <EmptyState
-              actionLabel={hasSearch ? undefined : 'Add first image'}
+              actionLabel={hasRefinements ? 'Clear filters' : 'Add first image'}
               body={
-                hasSearch
-                  ? 'No saved captions match that search yet.'
-                  : 'Choose from your library or open the camera, then add a typed or dictated caption.'
+                hasRefinements
+                  ? 'No saved images match that mix of search, filters, or tags yet.'
+                  : 'Choose from your library or open the camera, then add a caption, tags, and favorites as your gallery grows.'
               }
-              onAction={hasSearch ? undefined : openPicker}
+              onAction={hasRefinements ? clearRefinements : openPicker}
               theme={theme}
-              title={hasSearch ? 'No matches' : 'Your gallery is ready'}
+              title={hasRefinements ? 'No matches' : 'Your gallery is ready'}
             />
           }
           items={filteredItems}
@@ -167,6 +222,13 @@ type StatPillProps = {
   label: string;
   theme: AppTheme;
   value: string;
+};
+
+type FilterChipProps = {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+  theme: AppTheme;
 };
 
 function StatPill({ label, theme, value }: StatPillProps) {
@@ -187,11 +249,49 @@ function StatPill({ label, theme, value }: StatPillProps) {
   );
 }
 
+function FilterChip({ active, label, onPress, theme }: FilterChipProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.filterChip,
+        {
+          backgroundColor: active ? theme.colors.primary : theme.colors.surface,
+          borderColor: active ? theme.colors.primary : theme.colors.border,
+          borderRadius: theme.radius.md,
+          opacity: pressed ? 0.75 : 1,
+        },
+      ]}
+    >
+      <Text style={[styles.filterChipText, { color: active ? theme.colors.primaryText : theme.colors.text }]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
+  },
+  filterChip: {
+    borderWidth: 1,
+    minHeight: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  filterChipText: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   page: {
     alignSelf: 'center',
@@ -232,6 +332,20 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  tagsLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0,
+    textTransform: 'uppercase',
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  tagsSection: {
+    gap: 8,
   },
   title: {
     fontSize: 34,

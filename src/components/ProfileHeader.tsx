@@ -8,11 +8,11 @@ type ProfileHeaderProps = {
   user: GalleryUser;
   theme: AppTheme;
   themePreference: ThemePreference;
-  onSignOut: () => void;
+  onOpenSettings: () => void;
   onToggleTheme: () => void;
 };
 
-export function ProfileHeader({ user, theme, themePreference, onSignOut, onToggleTheme }: ProfileHeaderProps) {
+export function ProfileHeader({ user, theme, themePreference, onOpenSettings, onToggleTheme }: ProfileHeaderProps) {
   const initial = user.name.trim().charAt(0).toUpperCase() || 'G';
 
   return (
@@ -38,6 +38,11 @@ export function ProfileHeader({ user, theme, themePreference, onSignOut, onToggl
           <Text numberOfLines={1} style={[styles.name, { color: theme.colors.text }]}>
             {user.name}
           </Text>
+          {user.email ? (
+            <Text numberOfLines={1} style={[styles.email, { color: theme.colors.muted }]}>
+              {user.email}
+            </Text>
+          ) : null}
         </View>
       </View>
 
@@ -60,7 +65,7 @@ export function ProfileHeader({ user, theme, themePreference, onSignOut, onToggl
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          onPress={onSignOut}
+          onPress={onOpenSettings}
           style={({ pressed }) => [
             styles.action,
             {
@@ -70,7 +75,7 @@ export function ProfileHeader({ user, theme, themePreference, onSignOut, onToggl
             },
           ]}
         >
-          <Text style={[styles.actionText, { color: theme.colors.text }]}>Sign out</Text>
+          <Text style={[styles.actionText, { color: theme.colors.text }]}>Settings</Text>
         </Pressable>
       </View>
     </View>
@@ -114,6 +119,11 @@ const styles = StyleSheet.create({
     gap: 16,
     justifyContent: 'space-between',
   },
+  email: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0,
+  },
   eyebrow: {
     fontSize: 12,
     fontWeight: '700',
@@ -134,6 +144,7 @@ const styles = StyleSheet.create({
   },
   profileText: {
     flex: 1,
+    gap: 2,
     minWidth: 0,
   },
 });

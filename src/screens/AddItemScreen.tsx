@@ -4,6 +4,7 @@ import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, Te
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
+import { parseTagInput } from '../gallery/galleryMetadata';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { StatusBanner } from '../components/StatusBanner';
 import { loadGalleryItems, saveGalleryItems, ThemePreference } from '../storage/galleryStorage';
@@ -19,6 +20,7 @@ type AddItemScreenProps = NativeStackScreenProps<RootStackParamList, 'AddItem'> 
 export function AddItemScreen({ navigation, route, themePreference }: AddItemScreenProps) {
   const theme = getAppTheme(themePreference);
   const [caption, setCaption] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
   const [status, setStatus] = useState<{ message: string; tone: 'info' | 'error' | 'success' }>();
   const [isSaving, setIsSaving] = useState(false);
   const voice = useVoiceCaption({
@@ -34,20 +36,28 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
     }
 
     setIsSaving(true);
-    const id = Crypto.randomUUID();
-    const imageUri = await persistImageForGallery(route.params.imageUri, id);
-    const existingItems = await loadGalleryItems();
-    const nextItem: GalleryItem = {
-      id,
-      caption: trimmedCaption,
-      createdAt: new Date().toISOString(),
-      imageUri,
-      source: route.params.source,
-    };
 
-    await saveGalleryItems([nextItem, ...existingItems]);
-    setIsSaving(false);
-    navigation.navigate('Gallery');
+    try {
+      const id = Crypto.randomUUID();
+      const imageUri = await persistImageForGallery(route.params.imageUri, id);
+      const existingItems = await loadGalleryItems();
+      const nextItem: GalleryItem = {
+        id,
+        caption: trimmedCaption,
+        createdAt: new Date().toISOString(),
+        imageUri,
+        isFavorite: false,
+        source: route.params.source,
+        tags: parseTagInput(tagsInput),
+      };
+
+      await saveGalleryItems([nextItem, ...existingItems]);
+      navigation.navigate('Gallery');
+    } catch {
+      setStatus({ message: 'The image could not be saved. Try again once the file finishes loading.', tone: 'error' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const toggleVoice = () => {
@@ -93,6 +103,26 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
               textAlignVertical="top"
               value={caption}
             />
+            <Text style={[styles.helper, { color: theme.colors.muted }]}>
+              Add the short story behind the image, then tag it so future searches are faster.
+            </Text>
+            <Text style={[styles.label, { color: theme.colors.text }]}>Tags</Text>
+            <TextInput
+              autoCapitalize="none"
+              onChangeText={setTagsInput}
+              placeholder="receipt, study, travel"
+              placeholderTextColor={theme.colors.muted}
+              style={[
+                styles.tagsInput,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.md,
+                  color: theme.colors.text,
+                },
+              ]}
+              value={tagsInput}
+            />
             <StatusBanner message={voice.message || status?.message} theme={theme} tone={status?.tone ?? 'info'} />
             <View style={styles.actions}>
               <PrimaryButton
@@ -133,6 +163,10 @@ const styles = StyleSheet.create({
   form: {
     gap: 12,
   },
+  helper: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
   header: {
     gap: 4,
   },
@@ -155,6 +189,13 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  tagsInput: {
+    borderWidth: 1,
+    fontSize: 15,
+    minHeight: 48,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
   },
   title: {
     fontSize: 34,

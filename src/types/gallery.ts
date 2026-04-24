@@ -1,4 +1,5 @@
 export type GallerySource = 'camera' | 'library';
+export type GalleryFilter = 'all' | 'favorites' | 'camera' | 'library';
 
 export type GalleryItem = {
   id: string;
@@ -6,6 +7,8 @@ export type GalleryItem = {
   caption: string;
   createdAt: string;
   source: GallerySource;
+  tags?: string[];
+  isFavorite?: boolean;
 };
 
 export type GalleryUser = {
@@ -25,4 +28,5 @@ export type RootStackParamList = {
   Detail: {
     itemId: string;
   };
+  Settings: undefined;
 };

@@ -26,10 +26,12 @@ Key features:
 - Google sign-in.
 - Camera and photo library import.
 - Typed or voice captions.
-- Fast caption search.
+- Fast caption and tag search.
+- Favorites and quick filters.
 - Offline local storage.
+- Settings for local data and appearance.
 - Dark mode.
-- Image sharing.
+- Image sharing with the saved image file.
 
 My Gallery is not trying to replace your whole photo library. It is built for the smaller set of images that need context.
 
@@ -38,10 +40,11 @@ My Gallery is not trying to replace your whole photo library. It is built for th
 1. Login screen with Google sign-in.
 2. Empty gallery with action buttons.
 3. Add caption screen with a selected image.
-4. Gallery with saved images and quick stats.
-5. Detail screen with edit/share/delete.
+4. Gallery with saved images, quick stats, favorites, and tag filters.
+5. Detail screen with caption edit, tags, favorite toggle, and share.
 6. Native Android share sheet showing an image preview.
-7. Dark mode gallery.
+7. Settings screen with local-first privacy and storage actions.
+8. Dark mode gallery.
 
 ## Feature Graphic Idea
 
@@ -90,11 +93,7 @@ Security notes:
 
 Ship these before Play Store production:
 
-- Settings screen.
 - Privacy policy link.
-- Account sign-out clarity.
-- Empty gallery onboarding.
-- Tags or favorites.
 - Crash reporting.
 - Accessibility pass.
 

@@ -1,3 +1,4 @@
+import { getContentUriAsync } from 'expo-file-system/legacy';
 import * as ExpoSharing from 'expo-sharing';
 import { Platform, Share } from 'react-native';
 
@@ -38,12 +39,12 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
     }
 
     if (await ExpoSharing.isAvailableAsync()) {
-      await ExpoSharing.shareAsync(item.imageUri, {
+      await ExpoSharing.shareAsync(await getNativeShareUri(item.imageUri), {
         dialogTitle: caption,
         mimeType: getImageMimeType(item.imageUri),
         UTI: getImageUti(item.imageUri),
       });
-      return { message: 'Image share sheet opened.', tone: 'success' };
+      return { message: 'Image share sheet opened with the saved file.', tone: 'success' };
     }
 
     await Share.share({
@@ -54,6 +55,18 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
     return { message: 'Caption share sheet opened. Image sharing is not available on this device.', tone: 'info' };
   } catch {
     return { message: 'Sharing is not available on this device.', tone: 'error' };
+  }
+}
+
+async function getNativeShareUri(uri: string): Promise<string> {
+  if (Platform.OS !== 'android' || !uri.startsWith('file://')) {
+    return uri;
+  }
+
+  try {
+    return await getContentUriAsync(uri);
+  } catch {
+    return uri;
   }
 }
 

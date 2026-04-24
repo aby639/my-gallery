@@ -80,11 +80,9 @@ That makes the app useful for:
 
 Phase 1, make the current app feel complete:
 
-- Albums or tags.
-- Favorites.
-- Better caption sharing.
+- Better caption sharing templates.
 - Search filters for camera/library/date.
-- Simple onboarding.
+- Import/export backup.
 - Empty-state sample tips.
 
 Phase 2, make it genuinely useful:
@@ -100,7 +98,6 @@ Phase 3, make it Play Store-ready:
 
 - Crash reporting.
 - Analytics for core flows.
-- Privacy policy.
-- Settings screen.
-- Account deletion/sign-out clarity.
+- Privacy policy URL.
+- Account deletion or local account reset flow.
 - Accessibility pass and larger text checks.

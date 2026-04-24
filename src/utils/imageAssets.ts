@@ -60,6 +60,20 @@ export function deletePersistedGalleryImage(uri: string): void {
   }
 }
 
+export function clearPersistedGalleryImages(): void {
+  try {
+    const galleryDirectory = getGalleryDirectory();
+
+    if (!galleryDirectory.exists) {
+      return;
+    }
+
+    galleryDirectory.delete();
+  } catch {
+    // Clearing the gallery can still proceed even if file cleanup fails.
+  }
+}
+
 function getGalleryDirectory(): Directory {
   return new Directory(Paths.document, 'gallery');
 }

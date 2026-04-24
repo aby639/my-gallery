@@ -13,11 +13,14 @@ Most gallery apps are good at storing photos, but not always good at remembering
 - Google sign-in on Web, Android, and iOS.
 - Add images from camera or photo library.
 - Type captions or dictate them with speech recognition.
-- Search saved images by caption.
+- Search saved images by caption and tag.
+- Mark important images as favorites.
+- Add tags for quick grouping and filtering.
 - Store captions, profile state, theme, and native image copies locally.
-- Edit captions after saving.
-- Share saved images through the native share sheet.
+- Edit captions, tags, and favorite state after saving.
+- Share saved images through the native share sheet with the actual image file on mobile.
 - Toggle light and dark mode.
+- Manage local data, sign-out, and release info from Settings.
 - Receive compatible UI/JavaScript updates through EAS Update.
 
 ## Screens
@@ -26,6 +29,7 @@ Most gallery apps are good at storing photos, but not always good at remembering
 - Gallery
 - Add caption
 - Image detail
+- Settings
 - Share flow
 
 Screenshots and store artwork are tracked in [Play Store listing draft](docs/play-store-listing-draft.md).
@@ -142,11 +146,10 @@ More detail lives in [Release and product plan](docs/release-and-product-plan.md
 
 Near-term:
 
-- Tags or albums.
-- Favorites.
 - Better caption templates when sharing.
 - Search filters for date and source.
-- Settings and privacy screen.
+- Privacy policy URL in app settings.
+- Import/export backup.
 
 Later:
 
@@ -160,4 +163,4 @@ Later:
 
 My Gallery is local-first. Images and captions are stored on the device unless the user chooses to share them. Google Sign-In is used for identity, and camera, photo library, microphone, and speech recognition permissions are requested only when the related feature is used.
 
-Before a production Play Store release, publish a full privacy policy and align it with the final feature set.
+Before a production Play Store release, publish a full privacy policy and align it with the final feature set. A starter policy draft lives in [Privacy policy draft](docs/privacy-policy-draft.md).

@@ -8,6 +8,7 @@ import { AddItemScreen } from '../screens/AddItemScreen';
 import { DetailScreen } from '../screens/DetailScreen';
 import { GalleryScreen } from '../screens/GalleryScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -35,7 +36,6 @@ export function AppNavigator({
               {(props) => (
                 <GalleryScreen
                   {...props}
-                  onSignOut={onSignOut}
                   onToggleTheme={onToggleTheme}
                   themePreference={themePreference}
                   user={user}
@@ -47,6 +47,17 @@ export function AppNavigator({
             </Stack.Screen>
             <Stack.Screen name="Detail">
               {(props) => <DetailScreen {...props} themePreference={themePreference} />}
+            </Stack.Screen>
+            <Stack.Screen name="Settings">
+              {(props) => (
+                <SettingsScreen
+                  {...props}
+                  onSignOut={onSignOut}
+                  onToggleTheme={onToggleTheme}
+                  themePreference={themePreference}
+                  user={user}
+                />
+              )}
             </Stack.Screen>
           </>
         ) : (
