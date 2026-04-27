@@ -1,0 +1,27 @@
+# Local dependencies and caches
+node_modules/
+.expo/
+.netlify/
+
+# Build outputs
+dist/
+coverage/
+web-build/
+android/.gradle/
+android/build/
+android/app/build/
+
+# Environment and machine-local config
+.env
+.env.local
+android/local.properties
+
+# Logs and local screenshots
+*.log
+agent-browser-*.png
+
+# VCS and editor noise
+.git/
+.DS_Store
+Thumbs.db
+.vscode/
