@@ -15,6 +15,7 @@ android/app/build/
 .env
 .env.local
 android/local.properties
+android/app/src/main/assets/adi-registration.properties
 
 # Logs and local screenshots
 *.log

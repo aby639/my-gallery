@@ -71,10 +71,7 @@
     },
     "owner": "aby369",
     "updates": {
-      "url": "https://u.expo.dev/5af2c1fa-ebba-4a1f-a10f-1dc17e73741e",
-      "requestHeaders": {
-        "expo-channel-name": "preview"
-      }
+      "url": "https://u.expo.dev/5af2c1fa-ebba-4a1f-a10f-1dc17e73741e"
     }
   }
 }

@@ -15,6 +15,7 @@ agent-browser-*.png
 *.p12
 *.pem
 android/local.properties
+android/app/src/main/assets/adi-registration.properties
 
 # Environment files
 .env
