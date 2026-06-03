@@ -51,6 +51,8 @@ export async function signInWithNativeGoogle(): Promise<NativeGoogleSignInResult
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     }
 
+    await clearNativeGoogleSession();
+
     const response = await GoogleSignin.signIn();
 
     if (response.type !== 'success') {
@@ -69,5 +71,19 @@ export async function signInWithNativeGoogle(): Promise<NativeGoogleSignInResult
     };
   } catch (error) {
     return { user: null, error: getNativeGoogleErrorMessage(error) };
+  }
+}
+
+export async function clearNativeGoogleSession(): Promise<void> {
+  if (Platform.OS === 'web') {
+    return;
+  }
+
+  configureNativeGoogleSignIn();
+
+  try {
+    await GoogleSignin.signOut();
+  } catch {
+    // If Google has no cached native session, app sign-out should still complete.
   }
 }

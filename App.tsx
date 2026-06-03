@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { clearNativeGoogleSession } from './src/auth/nativeGoogleSignIn';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import {
   clearUser,
@@ -38,6 +39,7 @@ export default function App() {
   };
 
   const handleSignOut = async () => {
+    await clearNativeGoogleSession();
     await clearUser();
     setUser(null);
   };
