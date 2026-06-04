@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { ThemePreference } from '../storage/galleryStorage';
 import { AppTheme } from '../theme/theme';
@@ -13,84 +13,123 @@ type ProfileHeaderProps = {
 };
 
 export function ProfileHeader({ user, theme, themePreference, onOpenSettings, onToggleTheme }: ProfileHeaderProps) {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 520;
   const initial = user.name.trim().charAt(0).toUpperCase() || 'G';
+  const firstName = user.name.trim().split(/\s+/)[0] || 'there';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profile}>
-        {user.photoUrl ? (
-          <Image source={{ uri: user.photoUrl }} style={[styles.avatar, { borderRadius: theme.radius.md }]} />
-        ) : (
-          <View
-            style={[
-              styles.avatarFallback,
-              {
-                backgroundColor: theme.colors.primary,
-                borderRadius: theme.radius.md,
-              },
-            ]}
-          >
-            <Text style={[styles.avatarInitial, { color: theme.colors.primaryText }]}>{initial}</Text>
-          </View>
-        )}
-        <View style={styles.profileText}>
-          <Text style={[styles.eyebrow, { color: theme.colors.muted }]}>Signed in</Text>
-          <Text numberOfLines={1} style={[styles.name, { color: theme.colors.text }]}>
-            {user.name}
-          </Text>
-          {user.email ? (
-            <Text numberOfLines={1} style={[styles.email, { color: theme.colors.muted }]}>
-              {user.email}
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.surfaceRaised,
+          borderColor: theme.colors.border,
+          borderRadius: theme.radius.md,
+          boxShadow: `0 18px 40px ${theme.colors.shadow}`,
+        },
+      ]}
+    >
+      <View style={[styles.accentRail, { backgroundColor: theme.colors.accent, borderRadius: theme.radius.sm }]} />
+      <View style={styles.topRow}>
+        <View style={[styles.profile, isCompact ? styles.profileCompact : undefined]}>
+          {user.photoUrl ? (
+            <Image
+              source={{ uri: user.photoUrl }}
+              style={[
+                styles.avatar,
+                {
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.md,
+                },
+              ]}
+            />
+          ) : (
+            <View
+              style={[
+                styles.avatarFallback,
+                {
+                  backgroundColor: theme.colors.primary,
+                  borderRadius: theme.radius.md,
+                },
+              ]}
+            >
+              <Text style={[styles.avatarInitial, { color: theme.colors.primaryText }]}>{initial}</Text>
+            </View>
+          )}
+          <View style={styles.profileText}>
+            <Text style={[styles.eyebrow, { color: theme.colors.accent }]}>Welcome back, {firstName}</Text>
+            <Text numberOfLines={1} style={[styles.name, { color: theme.colors.text }]}>
+              {user.name}
             </Text>
-          ) : null}
+            {user.email ? (
+              <Text numberOfLines={1} style={[styles.email, { color: theme.colors.muted }]}>
+                {user.email}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+
+        <View style={[styles.actions, isCompact ? styles.actionsCompact : undefined]}>
+          <HeaderAction
+            label={themePreference === 'dark' ? 'Light' : 'Dark'}
+            onPress={onToggleTheme}
+            theme={theme}
+          />
+          <HeaderAction label="Settings" onPress={onOpenSettings} theme={theme} />
         </View>
       </View>
 
-      <View style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onToggleTheme}
-          style={({ pressed }) => [
-            styles.action,
-            {
-              borderColor: theme.colors.border,
-              borderRadius: theme.radius.md,
-              opacity: pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.actionText, { color: theme.colors.text }]}>
-            {themePreference === 'dark' ? 'Light' : 'Dark'}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onOpenSettings}
-          style={({ pressed }) => [
-            styles.action,
-            {
-              borderColor: theme.colors.border,
-              borderRadius: theme.radius.md,
-              opacity: pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <Text style={[styles.actionText, { color: theme.colors.text }]}>Settings</Text>
-        </Pressable>
-      </View>
+      <Text style={[styles.welcomeCopy, { color: theme.colors.textSoft }]}>
+        Keep the visual, save the context, and find it again without digging through your camera roll.
+      </Text>
     </View>
   );
 }
 
+type HeaderActionProps = {
+  label: string;
+  onPress: () => void;
+  theme: AppTheme;
+};
+
+function HeaderAction({ label, onPress, theme }: HeaderActionProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.action,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+          borderRadius: theme.radius.md,
+          opacity: pressed ? 0.7 : 1,
+        },
+      ]}
+    >
+      <Text style={[styles.actionText, { color: theme.colors.text }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  accentRail: {
+    bottom: 18,
+    position: 'absolute',
+    right: 18,
+    top: 18,
+    width: 4,
+  },
   action: {
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    minHeight: 42,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
   actionText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
     letterSpacing: 0,
   },
   actions: {
@@ -99,25 +138,30 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'flex-end',
   },
+  actionsCompact: {
+    justifyContent: 'flex-start',
+    width: '100%',
+  },
   avatar: {
-    height: 48,
-    width: 48,
+    borderWidth: 1,
+    height: 60,
+    width: 60,
   },
   avatarFallback: {
     alignItems: 'center',
-    height: 48,
+    height: 60,
     justifyContent: 'center',
-    width: 48,
+    width: 60,
   },
   avatarInitial: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '900',
   },
   container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 16,
-    justifyContent: 'space-between',
+    borderWidth: 1,
+    gap: 14,
+    overflow: 'hidden',
+    padding: 18,
   },
   email: {
     fontSize: 13,
@@ -126,13 +170,14 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '900',
     letterSpacing: 0,
     marginBottom: 2,
+    textTransform: 'uppercase',
   },
   name: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 23,
+    fontWeight: '900',
     letterSpacing: 0,
   },
   profile: {
@@ -142,9 +187,25 @@ const styles = StyleSheet.create({
     gap: 12,
     minWidth: 0,
   },
+  profileCompact: {
+    flexBasis: '100%',
+  },
   profileText: {
     flex: 1,
     gap: 2,
     minWidth: 0,
+  },
+  topRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+    justifyContent: 'space-between',
+  },
+  welcomeCopy: {
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
+    maxWidth: 660,
   },
 });

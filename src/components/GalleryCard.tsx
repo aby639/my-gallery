@@ -1,4 +1,5 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, GestureResponderEvent, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppTheme } from '../theme/theme';
 import { GalleryItem } from '../types/gallery';
@@ -6,124 +7,256 @@ import { GalleryItem } from '../types/gallery';
 type GalleryCardProps = {
   item: GalleryItem;
   onPress: (item: GalleryItem) => void;
+  onShare: (item: GalleryItem) => void;
   theme: AppTheme;
+  index?: number;
 };
 
-export function GalleryCard({ item, onPress, theme }: GalleryCardProps) {
+export function GalleryCard({ index = 0, item, onPress, onShare, theme }: GalleryCardProps) {
+  const entrance = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
   const created = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(
     new Date(item.createdAt),
   );
+  const visibleTags = item.tags?.slice(0, 2) ?? [];
+
+  useEffect(() => {
+    Animated.timing(entrance, {
+      delay: Math.min(index * 35, 180),
+      duration: 260,
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  }, [entrance, index]);
+
+  const pressTo = (value: number) => {
+    Animated.spring(scale, {
+      damping: 18,
+      mass: 0.45,
+      stiffness: 260,
+      toValue: value,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleShare = (event: GestureResponderEvent) => {
+    event.stopPropagation();
+    onShare(item);
+  };
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={() => onPress(item)}
-      style={({ pressed }) => [
-        styles.card,
+    <Animated.View
+      style={[
         {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
-          borderRadius: theme.radius.md,
-          opacity: pressed ? 0.78 : 1,
+          opacity: entrance,
+          transform: [
+            {
+              translateY: entrance.interpolate({
+                inputRange: [0, 1],
+                outputRange: [12, 0],
+              }),
+            },
+            { scale },
+          ],
         },
       ]}
     >
-      <Image
-        accessibilityLabel={item.caption || 'Gallery image'}
-        resizeMode="cover"
-        source={{ uri: item.imageUri }}
-        style={[styles.image, { borderTopLeftRadius: theme.radius.md, borderTopRightRadius: theme.radius.md }]}
-      />
-      <View style={styles.body}>
-        <Text numberOfLines={2} style={[styles.caption, { color: theme.colors.text }]}>
-          {item.caption || 'Untitled memory'}
-        </Text>
-        <View style={styles.metaRow}>
-          <Text style={[styles.meta, { color: theme.colors.muted }]}>
-            {created} · {item.source === 'camera' ? 'Camera' : 'Library'}
-          </Text>
+      <Pressable
+        accessibilityLabel={`Open ${item.caption || 'gallery image'}`}
+        accessibilityRole="button"
+        onPress={() => onPress(item)}
+        onPressIn={() => pressTo(0.985)}
+        onPressOut={() => pressTo(1)}
+        style={[
+          styles.card,
+          {
+            backgroundColor: theme.colors.surfaceRaised,
+            borderColor: theme.colors.border,
+            borderRadius: theme.radius.md,
+            boxShadow: `0 12px 26px ${theme.colors.shadow}`,
+          },
+        ]}
+      >
+        <View style={styles.imageWrap}>
+          <Image
+            accessibilityLabel={item.caption || 'Gallery image'}
+            resizeMode="cover"
+            source={{ uri: item.imageUri }}
+            style={[
+              styles.image,
+              {
+                borderColor: theme.colors.border,
+                borderRadius: theme.radius.md,
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.sourcePill,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+                borderRadius: theme.radius.sm,
+              },
+            ]}
+          >
+            <Text style={[styles.sourceText, { color: theme.colors.text }]}>
+              {item.source === 'camera' ? 'Camera' : 'Library'}
+            </Text>
+          </View>
           {item.isFavorite ? (
             <View
               style={[
-                styles.badge,
+                styles.favoriteMark,
                 {
+                  backgroundColor: theme.colors.accentSoft,
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.sm,
+                },
+              ]}
+            >
+              <Text style={[styles.favoriteText, { color: theme.colors.accent }]}>Fav</Text>
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.body}>
+          <View style={styles.captionRow}>
+            <Text numberOfLines={2} style={[styles.caption, { color: theme.colors.text }]}>
+              {item.caption || 'Untitled memory'}
+            </Text>
+            <Pressable
+              accessibilityLabel={`Share ${item.caption || 'gallery image'}`}
+              accessibilityRole="button"
+              onPress={handleShare}
+              style={({ pressed }) => [
+                styles.shareButton,
+                {
+                  backgroundColor: theme.colors.primarySoft,
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.sm,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.shareText, { color: theme.colors.text }]}>Share</Text>
+            </Pressable>
+          </View>
+          <Text style={[styles.meta, { color: theme.colors.muted }]}>{created}</Text>
+          {visibleTags.length ? (
+            <View style={styles.tagRow}>
+              {visibleTags.map((tag) => (
+                <View
+                  key={tag}
+                  style={[
+                    styles.tag,
+                    {
+                      backgroundColor: theme.colors.surfaceAlt,
+                      borderColor: theme.colors.border,
+                      borderRadius: theme.radius.sm,
+                    },
+                  ]}
+                >
+                  <Text numberOfLines={1} style={[styles.tagText, { color: theme.colors.text }]}>
+                    {tag}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.tag,
+                {
+                  alignSelf: 'flex-start',
                   backgroundColor: theme.colors.surfaceAlt,
                   borderColor: theme.colors.border,
                   borderRadius: theme.radius.sm,
                 },
               ]}
             >
-              <Text style={[styles.badgeText, { color: theme.colors.text }]}>Favorite</Text>
+              <Text style={[styles.tagText, { color: theme.colors.muted }]}>No tag</Text>
             </View>
-          ) : null}
+          )}
         </View>
-        {item.tags?.length ? (
-          <View style={styles.tagRow}>
-            {item.tags.slice(0, 2).map((tag) => (
-              <View
-                key={tag}
-                style={[
-                  styles.tag,
-                  {
-                    backgroundColor: theme.colors.surfaceAlt,
-                    borderColor: theme.colors.border,
-                    borderRadius: theme.radius.sm,
-                  },
-                ]}
-              >
-                <Text numberOfLines={1} style={[styles.tagText, { color: theme.colors.text }]}>
-                  {tag}
-                </Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-      </View>
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  badge: {
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0,
-  },
   body: {
-    gap: 6,
-    minHeight: 94,
-    padding: 10,
+    gap: 8,
+    minHeight: 112,
+    padding: 12,
   },
   caption: {
-    fontSize: 14,
-    fontWeight: '700',
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '900',
     letterSpacing: 0,
-    lineHeight: 18,
+    lineHeight: 19,
+    minWidth: 0,
+  },
+  captionRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 8,
   },
   card: {
     borderWidth: 1,
     flex: 1,
     overflow: 'hidden',
   },
-  image: {
-    aspectRatio: 1,
-    width: '100%',
+  favoriteMark: {
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
-  meta: {
-    flex: 1,
-    fontSize: 11,
-    fontWeight: '700',
+  favoriteText: {
+    fontSize: 10,
+    fontWeight: '900',
     letterSpacing: 0,
   },
-  metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
+  image: {
+    aspectRatio: 1.06,
+    borderWidth: 1,
+    width: '100%',
+  },
+  imageWrap: {
+    padding: 8,
+  },
+  meta: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0,
+  },
+  shareButton: {
+    borderWidth: 1,
+    minHeight: 30,
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+  },
+  shareText: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  sourcePill: {
+    borderWidth: 1,
+    bottom: 18,
+    left: 18,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    position: 'absolute',
+  },
+  sourceText: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   tag: {
     borderWidth: 1,
@@ -138,7 +271,7 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '800',
     letterSpacing: 0,
   },
 });

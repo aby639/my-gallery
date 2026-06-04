@@ -106,6 +106,7 @@ export function SettingsScreen({
 
         <SectionCard body={user.email ?? 'Google profile connected'} theme={theme} title={user.name}>
           <PrimaryButton
+            icon={themePreference === 'dark' ? 'L' : 'D'}
             label={themePreference === 'dark' ? 'Use light mode' : 'Use dark mode'}
             onPress={onToggleTheme}
             theme={theme}
@@ -129,13 +130,14 @@ export function SettingsScreen({
             requested only when you use those features.
           </Text>
           <PrimaryButton
+            icon="P"
             label="Privacy policy"
             onPress={handleOpenPrivacyPolicy}
             theme={theme}
             variant="secondary"
             accessibilityHint="Open the app privacy policy"
           />
-          <PrimaryButton label="Clear local gallery" onPress={handleClearGallery} theme={theme} variant="danger" />
+          <PrimaryButton icon="!" label="Clear local gallery" onPress={handleClearGallery} theme={theme} variant="danger" />
         </SectionCard>
 
         <SectionCard body="This build is ready for tester installs and OTA UI updates." theme={theme} title="Release info">
@@ -163,9 +165,10 @@ function SectionCard({ body, children, theme, title }: SectionCardProps) {
       style={[
         styles.section,
         {
-          backgroundColor: theme.colors.surface,
+          backgroundColor: theme.colors.surfaceRaised,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
+          boxShadow: `0 16px 38px ${theme.colors.shadow}`,
         },
       ]}
     >
@@ -190,7 +193,7 @@ function InfoCard({ label, theme, value }: InfoCardProps) {
       style={[
         styles.infoCard,
         {
-          backgroundColor: theme.colors.surfaceAlt,
+          backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
         },

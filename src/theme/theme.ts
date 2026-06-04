@@ -6,14 +6,21 @@ export type AppColors = {
   background: string;
   surface: string;
   surfaceAlt: string;
+  surfaceRaised: string;
   text: string;
+  textSoft: string;
   muted: string;
   border: string;
   primary: string;
   primaryText: string;
+  primarySoft: string;
   accent: string;
+  accentSoft: string;
   danger: string;
+  dangerText: string;
   success: string;
+  warning: string;
+  shadow: string;
 };
 
 export type AppTheme = {
@@ -48,31 +55,45 @@ const shared = {
 };
 
 const lightColors: AppColors = {
-  background: '#f7f7f8',
+  background: '#f4f5f2',
   surface: '#ffffff',
-  surfaceAlt: '#eceff1',
-  text: '#141414',
-  muted: '#65707a',
-  border: '#dfe3e7',
-  primary: '#111111',
+  surfaceAlt: '#eef1ed',
+  surfaceRaised: '#fbfbf8',
+  text: '#111312',
+  textSoft: '#303735',
+  muted: '#66726e',
+  border: '#d9ded8',
+  primary: '#101513',
   primaryText: '#ffffff',
-  accent: '#0f766e',
-  danger: '#b42318',
-  success: '#138a50',
+  primarySoft: '#e3ebe6',
+  accent: '#087f6d',
+  accentSoft: '#d8f2eb',
+  danger: '#e95f58',
+  dangerText: '#1e0504',
+  success: '#15875f',
+  warning: '#b67808',
+  shadow: 'rgba(20, 28, 24, 0.14)',
 };
 
 const darkColors: AppColors = {
-  background: '#101010',
-  surface: '#1a1a1a',
-  surfaceAlt: '#262626',
-  text: '#f5f5f5',
-  muted: '#a6adb5',
-  border: '#333333',
-  primary: '#f5f5f5',
-  primaryText: '#111111',
-  accent: '#35c5b4',
-  danger: '#ff7a70',
-  success: '#54d68a',
+  background: '#0f1110',
+  surface: '#181b1a',
+  surfaceAlt: '#232826',
+  surfaceRaised: '#1f2422',
+  text: '#f5f7f4',
+  textSoft: '#d8dfdb',
+  muted: '#9ba7a2',
+  border: '#303835',
+  primary: '#f7faf6',
+  primaryText: '#101513',
+  primarySoft: '#28342f',
+  accent: '#45d2b6',
+  accentSoft: '#123b34',
+  danger: '#ff7770',
+  dangerText: '#220807',
+  success: '#6fe0a4',
+  warning: '#f2b64b',
+  shadow: 'rgba(0, 0, 0, 0.42)',
 };
 
 export const themes: Record<ThemePreference, AppTheme> = {

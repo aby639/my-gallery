@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useGoogleAuth } from '../auth/useGoogleAuth';
@@ -42,21 +42,47 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.poster}>
-          <Text style={[styles.brand, { color: theme.colors.text }]}>My Gallery</Text>
+          <View style={styles.brandRow}>
+            <View
+              style={[
+                styles.brandMark,
+                {
+                  backgroundColor: theme.colors.primary,
+                  borderRadius: theme.radius.md,
+                },
+              ]}
+            >
+              <View style={[styles.brandPhoto, { backgroundColor: theme.colors.primaryText, borderRadius: theme.radius.sm }]}>
+                <View style={[styles.brandDot, { backgroundColor: theme.colors.accent, borderRadius: 4 }]} />
+              </View>
+            </View>
+            <Text style={[styles.brand, { color: theme.colors.text }]}>My Gallery</Text>
+          </View>
           <Text style={[styles.headline, { color: theme.colors.text }]}>Save the photo. Keep the sentence.</Text>
           <Text style={[styles.body, { color: theme.colors.muted }]}>
             Sign in with Google, save images, dictate captions, search quickly, and share the moments that matter.
           </Text>
         </View>
 
-        <View style={styles.actions}>
+        <View
+          style={[
+            styles.actions,
+            {
+              backgroundColor: theme.colors.surfaceRaised,
+              borderColor: theme.colors.border,
+              borderRadius: theme.radius.md,
+              boxShadow: `0 18px 42px ${theme.colors.shadow}`,
+            },
+          ]}
+        >
           <StatusBanner message={authError} theme={theme} tone="error" />
           <StatusBanner message={authWarning} theme={theme} tone="info" />
           <PrimaryButton
             disabled={!canUseGoogle || isSigningIn}
             fullWidth
+            icon="G"
             label={isSigningIn ? 'Opening Google...' : 'Continue with Google'}
             onPress={handleGoogleSignIn}
             theme={theme}
@@ -78,14 +104,16 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
             </>
           ) : null}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   actions: {
+    borderWidth: 1,
     gap: 12,
+    padding: 14,
     width: '100%',
   },
   body: {
@@ -99,16 +127,38 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
+  brandDot: {
+    height: 8,
+    position: 'absolute',
+    right: 7,
+    top: 7,
+    width: 8,
+  },
+  brandMark: {
+    alignItems: 'center',
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
+  },
+  brandPhoto: {
+    height: 25,
+    width: 27,
+  },
+  brandRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
   container: {
     alignSelf: 'center',
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     maxWidth: 720,
     padding: 24,
     width: '100%',
   },
   headline: {
-    fontSize: 44,
+    fontSize: 42,
     fontWeight: '900',
     letterSpacing: 0,
     lineHeight: 50,

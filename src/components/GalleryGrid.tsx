@@ -1,4 +1,5 @@
 import { FlatList, ListRenderItemInfo, StyleSheet, useWindowDimensions, View } from 'react-native';
+import type { DimensionValue } from 'react-native';
 
 import { AppTheme } from '../theme/theme';
 import { GalleryItem } from '../types/gallery';
@@ -7,17 +8,20 @@ import { GalleryCard } from './GalleryCard';
 type GalleryGridProps = {
   items: GalleryItem[];
   onItemPress: (item: GalleryItem) => void;
+  onItemShare: (item: GalleryItem) => void;
   theme: AppTheme;
   ListEmptyComponent: React.ReactElement;
 };
 
-export function GalleryGrid({ items, onItemPress, theme, ListEmptyComponent }: GalleryGridProps) {
+export function GalleryGrid({ items, onItemPress, onItemShare, theme, ListEmptyComponent }: GalleryGridProps) {
   const { width } = useWindowDimensions();
   const columns = width >= 1040 ? 4 : width >= 720 ? 3 : 2;
 
-  const renderItem = ({ item }: ListRenderItemInfo<GalleryItem>) => (
-    <View style={[styles.item, { margin: theme.spacing.sm }]}>
-      <GalleryCard item={item} onPress={onItemPress} theme={theme} />
+  const itemWidth = `${100 / columns}%` as DimensionValue;
+
+  const renderItem = ({ index, item }: ListRenderItemInfo<GalleryItem>) => (
+    <View style={[styles.item, { flexBasis: itemWidth, maxWidth: itemWidth, padding: theme.spacing.sm }]}>
+      <GalleryCard index={index} item={item} onPress={onItemPress} onShare={onItemShare} theme={theme} />
     </View>
   );
 
@@ -38,8 +42,8 @@ export function GalleryGrid({ items, onItemPress, theme, ListEmptyComponent }: G
 
 const styles = StyleSheet.create({
   content: {
-    paddingBottom: 120,
-    paddingTop: 8,
+    paddingBottom: 132,
+    paddingTop: 6,
   },
   emptyContent: {
     flexGrow: 1,
@@ -48,7 +52,6 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   item: {
-    flex: 1,
     minWidth: 0,
   },
   row: {

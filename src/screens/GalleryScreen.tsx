@@ -16,6 +16,7 @@ import { loadGalleryItems, ThemePreference } from '../storage/galleryStorage';
 import { AppTheme, getAppTheme } from '../theme/theme';
 import { GalleryFilter, GalleryItem, GalleryUser, RootStackParamList } from '../types/gallery';
 import { getPersistableImageUri } from '../utils/imageAssets';
+import { shareGalleryItem } from '../utils/shareGalleryItem';
 
 type GalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'Gallery'> & {
   user: GalleryUser;
@@ -117,6 +118,10 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
     setActiveTag(undefined);
   };
 
+  const shareItem = async (item: GalleryItem) => {
+    setStatus(await shareGalleryItem(item));
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
       <View style={styles.page}>
@@ -135,9 +140,28 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
               Save fewer photos, remember more context, and keep your useful visuals ready offline.
             </Text>
           </View>
+        </View>
+
+        <View
+          style={[
+            styles.actionPanel,
+            {
+              backgroundColor: theme.colors.surfaceRaised,
+              borderColor: theme.colors.border,
+              borderRadius: theme.radius.md,
+              boxShadow: `0 16px 38px ${theme.colors.shadow}`,
+            },
+          ]}
+        >
+          <View style={styles.actionCopy}>
+            <Text style={[styles.actionTitle, { color: theme.colors.text }]}>Capture a useful moment</Text>
+            <Text style={[styles.actionBody, { color: theme.colors.muted }]}>
+              Add an image, then write or dictate the caption before saving it locally.
+            </Text>
+          </View>
           <View style={styles.actionRow}>
-            <PrimaryButton label="Camera" onPress={openCamera} theme={theme} variant="secondary" />
-            <PrimaryButton label="Add image" onPress={openPicker} theme={theme} />
+            <PrimaryButton icon="+" label="Add image" onPress={openPicker} theme={theme} />
+            <PrimaryButton icon="C" label="Camera" onPress={openCamera} theme={theme} variant="secondary" />
           </View>
         </View>
 
@@ -211,6 +235,7 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
           }
           items={filteredItems}
           onItemPress={(item) => navigation.navigate('Detail', { itemId: item.id })}
+          onItemShare={shareItem}
           theme={theme}
         />
       </View>
@@ -237,9 +262,10 @@ function StatPill({ label, theme, value }: StatPillProps) {
       style={[
         styles.statPill,
         {
-          backgroundColor: theme.colors.surface,
+          backgroundColor: theme.colors.surfaceRaised,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
+          boxShadow: `0 10px 24px ${theme.colors.shadow}`,
         },
       ]}
     >
@@ -257,7 +283,7 @@ function FilterChip({ active, label, onPress, theme }: FilterChipProps) {
       style={({ pressed }) => [
         styles.filterChip,
         {
-          backgroundColor: active ? theme.colors.primary : theme.colors.surface,
+          backgroundColor: active ? theme.colors.primary : theme.colors.surfaceRaised,
           borderColor: active ? theme.colors.primary : theme.colors.border,
           borderRadius: theme.radius.md,
           opacity: pressed ? 0.75 : 1,
@@ -272,10 +298,34 @@ function FilterChip({ active, label, onPress, theme }: FilterChipProps) {
 }
 
 const styles = StyleSheet.create({
+  actionBody: {
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 18,
+  },
+  actionCopy: {
+    flex: 1,
+    gap: 4,
+    minWidth: 220,
+  },
+  actionPanel: {
+    alignItems: 'center',
+    borderWidth: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+    justifyContent: 'space-between',
+    padding: 14,
+  },
   actionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
+  },
+  actionTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   filterChip: {
     borderWidth: 1,
@@ -296,10 +346,10 @@ const styles = StyleSheet.create({
   page: {
     alignSelf: 'center',
     flex: 1,
-    gap: 16,
+    gap: 14,
     maxWidth: 1180,
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    paddingHorizontal: 18,
+    paddingTop: 10,
     width: '100%',
   },
   safeArea: {
@@ -325,7 +375,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   statValue: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '900',
     letterSpacing: 0,
   },
@@ -348,10 +398,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 34,
+    fontSize: 38,
     fontWeight: '900',
     letterSpacing: 0,
-    lineHeight: 40,
+    lineHeight: 43,
   },
   titleRow: {
     alignItems: 'flex-start',

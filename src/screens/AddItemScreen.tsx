@@ -81,10 +81,26 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
           <Image
             resizeMode="cover"
             source={{ uri: route.params.imageUri }}
-            style={[styles.preview, { borderRadius: theme.radius.md }]}
+            style={[
+              styles.preview,
+              {
+                borderColor: theme.colors.border,
+                borderRadius: theme.radius.md,
+              },
+            ]}
           />
 
-          <View style={styles.form}>
+          <View
+            style={[
+              styles.form,
+              {
+                backgroundColor: theme.colors.surfaceRaised,
+                borderColor: theme.colors.border,
+                borderRadius: theme.radius.md,
+                boxShadow: `0 18px 42px ${theme.colors.shadow}`,
+              },
+            ]}
+          >
             <Text style={[styles.label, { color: theme.colors.text }]}>Caption</Text>
             <TextInput
               multiline
@@ -126,12 +142,13 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
             <StatusBanner message={voice.message || status?.message} theme={theme} tone={status?.tone ?? 'info'} />
             <View style={styles.actions}>
               <PrimaryButton
+                icon="V"
                 label={voice.isListening ? 'Stop voice' : 'Dictate caption'}
                 onPress={toggleVoice}
                 theme={theme}
                 variant="secondary"
               />
-              <PrimaryButton disabled={isSaving} label={isSaving ? 'Saving...' : 'Save'} onPress={saveItem} theme={theme} />
+              <PrimaryButton disabled={isSaving} icon="S" label={isSaving ? 'Saving...' : 'Save'} onPress={saveItem} theme={theme} />
               <PrimaryButton label="Cancel" onPress={() => navigation.goBack()} theme={theme} variant="ghost" />
             </View>
           </View>
@@ -161,7 +178,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   form: {
+    borderWidth: 1,
     gap: 12,
+    padding: 16,
   },
   helper: {
     fontSize: 13,
@@ -185,6 +204,7 @@ const styles = StyleSheet.create({
   },
   preview: {
     aspectRatio: 1.35,
+    borderWidth: 1,
     width: '100%',
   },
   safeArea: {

@@ -115,9 +115,28 @@ export function DetailScreen({ navigation, route, themePreference }: DetailScree
           </Text>
         </View>
 
-        <Image resizeMode="cover" source={{ uri: item.imageUri }} style={[styles.image, { borderRadius: theme.radius.md }]} />
+        <Image
+          resizeMode="cover"
+          source={{ uri: item.imageUri }}
+          style={[
+            styles.image,
+            {
+              borderColor: theme.colors.border,
+              borderRadius: theme.radius.md,
+            },
+          ]}
+        />
 
-        <View style={styles.form}>
+        <View
+          style={[
+            styles.form,
+            {
+              backgroundColor: theme.colors.surfaceRaised,
+              borderColor: theme.colors.border,
+              borderRadius: theme.radius.md,
+            },
+          ]}
+        >
           <View style={styles.summaryRow}>
             <MetaPill label="Saved" theme={theme} value={created} />
             <MetaPill label="Source" theme={theme} value={item.source === 'camera' ? 'Camera' : 'Library'} />
@@ -167,14 +186,14 @@ export function DetailScreen({ navigation, route, themePreference }: DetailScree
           </Text>
           <StatusBanner message={status?.message} theme={theme} tone={status?.tone} />
           <View style={styles.actions}>
-            <PrimaryButton label="Save changes" onPress={saveDetails} theme={theme} />
+            <PrimaryButton icon="S" label="Save changes" onPress={saveDetails} theme={theme} />
             <PrimaryButton
               label={isFavorite ? 'Remove favorite' : 'Add favorite'}
               onPress={() => setIsFavorite((current) => !current)}
               theme={theme}
               variant="secondary"
             />
-            <PrimaryButton label="Share image" onPress={shareItem} theme={theme} variant="secondary" />
+            <PrimaryButton icon=">" label="Share image" onPress={shareItem} theme={theme} variant="secondary" />
             <PrimaryButton label="Delete" onPress={deleteItem} theme={theme} variant="danger" />
           </View>
         </View>
@@ -198,6 +217,7 @@ function MetaPill({ label, theme, value }: MetaPillProps) {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
+          boxShadow: `0 10px 24px ${theme.colors.shadow}`,
         },
       ]}
     >
@@ -223,7 +243,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   form: {
+    borderWidth: 1,
     gap: 12,
+    padding: 16,
   },
   header: {
     alignItems: 'center',
@@ -234,6 +256,7 @@ const styles = StyleSheet.create({
   },
   image: {
     aspectRatio: 1.35,
+    borderWidth: 1,
     width: '100%',
   },
   input: {
