@@ -55,7 +55,7 @@ export async function clearUser(): Promise<void> {
 
 export async function loadThemePreference(): Promise<ThemePreference> {
   const raw = await AsyncStorage.getItem(THEME_KEY);
-  return raw === 'dark' ? 'dark' : 'light';
+  return raw === 'light' ? 'light' : 'dark';
 }
 
 export async function saveThemePreference(theme: ThemePreference): Promise<void> {

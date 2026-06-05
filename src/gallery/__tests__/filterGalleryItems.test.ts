@@ -8,6 +8,7 @@ const items: GalleryItem[] = [
     caption: 'Evening walk',
     createdAt: '2026-04-20T10:00:00.000Z',
     isFavorite: true,
+    mood: 'Peaceful',
     source: 'library',
     tags: ['travel', 'sunset'],
   },
@@ -16,6 +17,7 @@ const items: GalleryItem[] = [
     imageUri: 'two.jpg',
     caption: 'Coffee light',
     createdAt: '2026-04-20T11:00:00.000Z',
+    mood: 'Focused',
     source: 'camera',
     tags: ['receipt'],
   },
@@ -24,6 +26,7 @@ const items: GalleryItem[] = [
     imageUri: 'three.jpg',
     caption: 'Blue hour',
     createdAt: '2026-04-19T10:00:00.000Z',
+    mood: 'Peaceful',
     source: 'library',
     tags: ['travel'],
   },
@@ -42,6 +45,10 @@ describe('filterGalleryItems', () => {
     expect(filterGalleryItems(items, 'travel').map((item) => item.id)).toEqual(['1', '3']);
   });
 
+  it('matches moods during search', () => {
+    expect(filterGalleryItems(items, 'focused').map((item) => item.id)).toEqual(['2']);
+  });
+
   it('supports favorites filter', () => {
     expect(filterGalleryItems(items, '', 'favorites').map((item) => item.id)).toEqual(['1']);
   });
@@ -56,7 +63,7 @@ describe('filterGalleryItems', () => {
 });
 
 describe('collectGalleryTags', () => {
-  it('returns the most-used tags first', () => {
-    expect(collectGalleryTags(items)).toEqual(['travel', 'receipt', 'sunset']);
+  it('returns the most-used moods and tags first', () => {
+    expect(collectGalleryTags(items)).toEqual(['Peaceful', 'travel', 'Focused', 'receipt', 'sunset']);
   });
 });

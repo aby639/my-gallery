@@ -1,14 +1,24 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
-import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { parseTagInput } from '../gallery/galleryMetadata';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { StatusBanner } from '../components/StatusBanner';
+import { MEMORY_MOODS, parseTagInput, SUGGESTED_TAGS } from '../gallery/galleryMetadata';
 import { loadGalleryItems, saveGalleryItems, ThemePreference } from '../storage/galleryStorage';
-import { getAppTheme } from '../theme/theme';
+import { AppTheme, getAppTheme } from '../theme/theme';
 import { GalleryItem, RootStackParamList } from '../types/gallery';
 import { persistImageForGallery } from '../utils/imageAssets';
 import { useVoiceCaption } from '../voice/useVoiceCaption';
@@ -21,6 +31,7 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
   const theme = getAppTheme(themePreference);
   const [caption, setCaption] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [selectedMood, setSelectedMood] = useState<string>(MEMORY_MOODS[0]);
   const [status, setStatus] = useState<{ message: string; tone: 'info' | 'error' | 'success' }>();
   const [isSaving, setIsSaving] = useState(false);
   const voice = useVoiceCaption({
@@ -31,7 +42,7 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
     const trimmedCaption = caption.trim();
 
     if (!trimmedCaption) {
-      setStatus({ message: 'Add a caption before saving.', tone: 'error' });
+      setStatus({ message: 'Write or dictate the memory before saving.', tone: 'error' });
       return;
     }
 
@@ -47,6 +58,7 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
         createdAt: new Date().toISOString(),
         imageUri,
         isFavorite: false,
+        mood: selectedMood,
         source: route.params.source,
         tags: parseTagInput(tagsInput),
       };
@@ -69,26 +81,62 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
     void voice.startListening();
   };
 
+  const addSuggestedTag = (tag: string) => {
+    const tags = parseTagInput(tagsInput);
+
+    if (tags.some((existing) => existing.toLowerCase() === tag.toLowerCase())) {
+      return;
+    }
+
+    setTagsInput([...tags, tag].join(', '));
+  };
+
+  const characterCount = `${caption.trim().length}/320`;
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
-            <Text style={[styles.eyebrow, { color: theme.colors.muted }]}>New image</Text>
-            <Text style={[styles.title, { color: theme.colors.text }]}>Add a caption</Text>
+            <PrimaryButton label="Back" onPress={() => navigation.goBack()} theme={theme} variant="ghost" />
+            <View style={styles.headerCopy}>
+              <Text style={[styles.eyebrow, { color: theme.colors.accent }]}>Capture. Write. Remember.</Text>
+              <Text style={[styles.title, { color: theme.colors.text }]}>Create Memory</Text>
+            </View>
           </View>
 
-          <Image
-            resizeMode="cover"
-            source={{ uri: route.params.imageUri }}
+          <View
             style={[
-              styles.preview,
+              styles.previewFrame,
               {
+                backgroundColor: theme.colors.surfaceRaised,
                 borderColor: theme.colors.border,
                 borderRadius: theme.radius.md,
+                boxShadow: `0 20px 44px ${theme.colors.shadow}`,
               },
             ]}
-          />
+          >
+            <Image resizeMode="cover" source={{ uri: route.params.imageUri }} style={styles.preview} />
+            <View style={[styles.previewPill, { backgroundColor: theme.colors.surface, borderRadius: theme.radius.sm }]}>
+              <Text style={[styles.previewPillText, { color: theme.colors.text }]}>
+                {route.params.source === 'camera' ? 'Camera memory' : 'Photo memory'}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => navigation.goBack()}
+              style={({ pressed }) => [
+                styles.changePhoto,
+                {
+                  backgroundColor: theme.colors.primary,
+                  borderRadius: theme.radius.sm,
+                  opacity: pressed ? 0.72 : 1,
+                },
+              ]}
+            >
+              <Text style={[styles.changePhotoText, { color: theme.colors.primaryText }]}>Change photo</Text>
+            </Pressable>
+          </View>
 
           <View
             style={[
@@ -97,15 +145,18 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
                 backgroundColor: theme.colors.surfaceRaised,
                 borderColor: theme.colors.border,
                 borderRadius: theme.radius.md,
-                boxShadow: `0 18px 42px ${theme.colors.shadow}`,
               },
             ]}
           >
-            <Text style={[styles.label, { color: theme.colors.text }]}>Caption</Text>
+            <View style={styles.labelRow}>
+              <Text style={[styles.label, { color: theme.colors.text }]}>Caption</Text>
+              <Text style={[styles.counter, { color: theme.colors.muted }]}>{characterCount}</Text>
+            </View>
             <TextInput
               multiline
+              maxLength={320}
               onChangeText={setCaption}
-              placeholder="Type a caption, or dictate it with voice"
+              placeholder="What was happening here? Why did it matter?"
               placeholderTextColor={theme.colors.muted}
               style={[
                 styles.input,
@@ -119,14 +170,51 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
               textAlignVertical="top"
               value={caption}
             />
-            <Text style={[styles.helper, { color: theme.colors.muted }]}>
-              Add the short story behind the image, then tag it so future searches are faster.
-            </Text>
+
+            <View
+              style={[
+                styles.voicePanel,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.md,
+                },
+              ]}
+            >
+              <View style={styles.voiceCopy}>
+                <Text style={[styles.voiceTitle, { color: theme.colors.text }]}>Voice caption</Text>
+                <Text style={[styles.voiceBody, { color: theme.colors.muted }]}>
+                  Dictate the caption, then edit the words before saving.
+                </Text>
+              </View>
+              <Waveform active={voice.isListening} theme={theme} />
+              <PrimaryButton
+                icon="V"
+                label={voice.isListening ? 'Stop' : 'Dictate'}
+                onPress={toggleVoice}
+                theme={theme}
+                variant="secondary"
+              />
+            </View>
+
+            <Text style={[styles.label, { color: theme.colors.text }]}>Mood</Text>
+            <View style={styles.chipRow}>
+              {MEMORY_MOODS.map((mood) => (
+                <ChoiceChip
+                  key={mood}
+                  active={selectedMood === mood}
+                  label={mood}
+                  onPress={() => setSelectedMood(mood)}
+                  theme={theme}
+                />
+              ))}
+            </View>
+
             <Text style={[styles.label, { color: theme.colors.text }]}>Tags</Text>
             <TextInput
               autoCapitalize="none"
               onChangeText={setTagsInput}
-              placeholder="receipt, study, travel"
+              placeholder="nature, morning, family"
               placeholderTextColor={theme.colors.muted}
               style={[
                 styles.tagsInput,
@@ -139,17 +227,23 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
               ]}
               value={tagsInput}
             />
+            <View style={styles.chipRow}>
+              {SUGGESTED_TAGS.slice(0, 6).map((tag) => (
+                <ChoiceChip key={tag} active={false} label={tag} onPress={() => addSuggestedTag(tag)} theme={theme} />
+              ))}
+            </View>
+
             <StatusBanner message={voice.message || status?.message} theme={theme} tone={status?.tone ?? 'info'} />
             <View style={styles.actions}>
               <PrimaryButton
-                icon="V"
-                label={voice.isListening ? 'Stop voice' : 'Dictate caption'}
-                onPress={toggleVoice}
+                disabled={isSaving}
+                fullWidth
+                icon="S"
+                label={isSaving ? 'Saving memory...' : 'Save Memory'}
+                onPress={saveItem}
                 theme={theme}
-                variant="secondary"
               />
-              <PrimaryButton disabled={isSaving} icon="S" label={isSaving ? 'Saving...' : 'Save'} onPress={saveItem} theme={theme} />
-              <PrimaryButton label="Cancel" onPress={() => navigation.goBack()} theme={theme} variant="ghost" />
+              <PrimaryButton fullWidth label="Cancel" onPress={() => navigation.goBack()} theme={theme} variant="ghost" />
             </View>
           </View>
         </ScrollView>
@@ -158,22 +252,110 @@ export function AddItemScreen({ navigation, route, themePreference }: AddItemScr
   );
 }
 
+type ChoiceChipProps = {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+  theme: AppTheme;
+};
+
+function ChoiceChip({ active, label, onPress, theme }: ChoiceChipProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.choiceChip,
+        {
+          backgroundColor: active ? theme.colors.secondary : theme.colors.surface,
+          borderColor: active ? theme.colors.secondary : theme.colors.border,
+          borderRadius: theme.radius.md,
+          opacity: pressed ? 0.72 : 1,
+        },
+      ]}
+    >
+      <Text style={[styles.choiceText, { color: active ? theme.colors.secondaryText : theme.colors.text }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+type WaveformProps = {
+  active: boolean;
+  theme: AppTheme;
+};
+
+function Waveform({ active, theme }: WaveformProps) {
+  return (
+    <View style={styles.waveform} accessibilityLabel={active ? 'Voice caption listening' : 'Voice caption idle'}>
+      {[10, 18, 13, 24, 16, 28, 12, 21].map((height, index) => (
+        <View
+          key={`${height}-${index}`}
+          style={[
+            styles.waveBar,
+            {
+              backgroundColor: active
+                ? index % 2 === 0
+                  ? theme.colors.accent
+                  : theme.colors.warm
+                : theme.colors.border,
+              borderRadius: 3,
+              height,
+            },
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   actions: {
+    gap: 10,
+  },
+  changePhoto: {
+    bottom: 14,
+    minHeight: 34,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    position: 'absolute',
+    right: 14,
+  },
+  changePhotoText: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
+  },
+  choiceChip: {
+    borderWidth: 1,
+    minHeight: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  choiceText: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0,
   },
   content: {
     alignSelf: 'center',
     gap: 18,
-    maxWidth: 820,
+    maxWidth: 860,
     padding: 20,
     width: '100%',
   },
-  eyebrow: {
+  counter: {
     fontSize: 12,
     fontWeight: '800',
+    letterSpacing: 0,
+  },
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: '900',
     letterSpacing: 0,
     textTransform: 'uppercase',
   },
@@ -182,17 +364,22 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
   },
-  helper: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
   header: {
-    gap: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  headerCopy: {
+    flex: 1,
+    gap: 3,
+    minWidth: 220,
   },
   input: {
     borderWidth: 1,
     fontSize: 16,
-    minHeight: 130,
+    lineHeight: 22,
+    minHeight: 132,
     padding: 14,
   },
   keyboard: {
@@ -200,12 +387,33 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  labelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   preview: {
-    aspectRatio: 1.35,
-    borderWidth: 1,
+    aspectRatio: 1.42,
     width: '100%',
+  },
+  previewFrame: {
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  previewPill: {
+    left: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    position: 'absolute',
+    top: 14,
+  },
+  previewPillText: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   safeArea: {
     flex: 1,
@@ -221,5 +429,39 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '900',
     letterSpacing: 0,
+    lineHeight: 39,
+  },
+  voiceBody: {
+    fontSize: 12,
+    fontWeight: '600',
+    lineHeight: 17,
+  },
+  voiceCopy: {
+    flex: 1,
+    gap: 2,
+    minWidth: 140,
+  },
+  voicePanel: {
+    alignItems: 'center',
+    borderWidth: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'space-between',
+    padding: 12,
+  },
+  voiceTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 0,
+  },
+  waveBar: {
+    width: 4,
+  },
+  waveform: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    height: 34,
   },
 });

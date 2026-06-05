@@ -51,7 +51,7 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       base64: Platform.OS === 'web',
       mediaTypes: ['images'],
       quality: 0.85,
@@ -84,7 +84,7 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       base64: Platform.OS === 'web',
       mediaTypes: ['images'],
       quality: 0.85,
@@ -122,6 +122,13 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
     setStatus(await shareGalleryItem(item));
   };
 
+  const explainVoiceCapture = () => {
+    setStatus({
+      message: 'Choose a photo first, then use Dictate caption while creating the memory.',
+      tone: 'info',
+    });
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
       <View style={styles.page}>
@@ -135,9 +142,9 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
 
         <View style={styles.titleRow}>
           <View style={styles.titleText}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>Gallery</Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Memories</Text>
             <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
-              Save fewer photos, remember more context, and keep your useful visuals ready offline.
+              Save fewer photos, remember more context, and keep meaningful visuals ready offline.
             </Text>
           </View>
         </View>
@@ -154,19 +161,20 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
           ]}
         >
           <View style={styles.actionCopy}>
-            <Text style={[styles.actionTitle, { color: theme.colors.text }]}>Capture a useful moment</Text>
+            <Text style={[styles.actionTitle, { color: theme.colors.text }]}>Create Memory</Text>
             <Text style={[styles.actionBody, { color: theme.colors.muted }]}>
-              Add an image, then write or dictate the caption before saving it locally.
+              Capture a moment, add the story, pick a mood, and save it privately on this device.
             </Text>
           </View>
           <View style={styles.actionRow}>
-            <PrimaryButton icon="+" label="Add image" onPress={openPicker} theme={theme} />
+            <PrimaryButton icon="P" label="Photo" onPress={openPicker} theme={theme} />
             <PrimaryButton icon="C" label="Camera" onPress={openCamera} theme={theme} variant="secondary" />
+            <PrimaryButton icon="V" label="Voice" onPress={explainVoiceCapture} theme={theme} variant="secondary" />
           </View>
         </View>
 
         <View style={styles.statsRow}>
-          <StatPill label="Saved" theme={theme} value={items.length.toString()} />
+          <StatPill label="Memories" theme={theme} value={items.length.toString()} />
           <StatPill label="Favorites" theme={theme} value={favoriteCount.toString()} />
           <StatPill label="Tagged" theme={theme} value={taggedCount.toString()} />
         </View>
@@ -197,7 +205,7 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
 
         {visibleTags.length ? (
           <View style={styles.tagsSection}>
-            <Text style={[styles.tagsLabel, { color: theme.colors.muted }]}>Quick tags</Text>
+            <Text style={[styles.tagsLabel, { color: theme.colors.muted }]}>Moods and tags</Text>
             <View style={styles.tagsRow}>
               {visibleTags.map((tag) => (
                 <FilterChip
@@ -219,18 +227,27 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
 
         <StatusBanner message={status?.message} theme={theme} tone={status?.tone} />
 
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            {hasRefinements ? 'Matching memories' : 'Recent memories'}
+          </Text>
+          <Text style={[styles.sectionMeta, { color: theme.colors.muted }]}>
+            {filteredItems.length} {filteredItems.length === 1 ? 'memory' : 'memories'}
+          </Text>
+        </View>
+
         <GalleryGrid
           ListEmptyComponent={
             <EmptyState
-              actionLabel={hasRefinements ? 'Clear filters' : 'Add first image'}
+              actionLabel={hasRefinements ? 'Clear filters' : 'Create first memory'}
               body={
                 hasRefinements
-                  ? 'No saved images match that mix of search, filters, or tags yet.'
-                  : 'Choose from your library or open the camera, then add a caption, tags, and favorites as your gallery grows.'
+                  ? 'No memories match that mix of search, filters, moods, or tags yet.'
+                  : 'Choose from your library or open the camera, then add a caption, mood, and tags.'
               }
               onAction={hasRefinements ? clearRefinements : openPicker}
               theme={theme}
-              title={hasRefinements ? 'No matches' : 'Your gallery is ready'}
+              title={hasRefinements ? 'No matches' : 'Your first memory is waiting'}
             />
           }
           items={filteredItems}
@@ -354,6 +371,22 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 28,
+  },
+  sectionMeta: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    letterSpacing: 0,
   },
   statLabel: {
     fontSize: 12,

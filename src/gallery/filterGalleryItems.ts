@@ -28,7 +28,11 @@ export function filterGalleryItems(
         return false;
       }
 
-      if (normalizedTag && !(item.tags ?? []).some((tag) => tag.toLowerCase() === normalizedTag)) {
+      if (
+        normalizedTag &&
+        item.mood?.toLowerCase() !== normalizedTag &&
+        !(item.tags ?? []).some((tag) => tag.toLowerCase() === normalizedTag)
+      ) {
         return false;
       }
 
@@ -41,6 +45,17 @@ export function collectGalleryTags(items: GalleryItem[], limit = 6): string[] {
   const usage = new Map<string, { count: number; label: string }>();
 
   items.forEach((item) => {
+    if (item.mood) {
+      const moodKey = item.mood.toLowerCase();
+      const moodEntry = usage.get(moodKey);
+
+      if (moodEntry) {
+        moodEntry.count += 1;
+      } else {
+        usage.set(moodKey, { count: 1, label: item.mood });
+      }
+    }
+
     (item.tags ?? []).forEach((tag) => {
       const key = tag.toLowerCase();
       const existing = usage.get(key);

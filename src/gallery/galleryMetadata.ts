@@ -1,5 +1,9 @@
 import { GalleryItem } from '../types/gallery';
 
+export const MEMORY_MOODS = ['Peaceful', 'Happy', 'Focused', 'Grateful', 'Inspired', 'Loved'] as const;
+
+export const SUGGESTED_TAGS = ['Nature', 'Study', 'Work', 'Family', 'Travel', 'Receipt', 'Idea', 'Morning'] as const;
+
 export function parseTagInput(input: string): string[] {
   const uniqueTags = new Map<string, string>();
 
@@ -25,7 +29,7 @@ export function formatTagInput(tags?: string[]): string {
 }
 
 export function buildSearchText(item: GalleryItem): string {
-  return [item.caption, ...(item.tags ?? [])].join(' ').toLowerCase();
+  return [item.caption, item.mood, item.source, ...(item.tags ?? [])].filter(Boolean).join(' ').toLowerCase();
 }
 
 function normalizeTag(rawTag: string): string {

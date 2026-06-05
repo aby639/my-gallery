@@ -1,38 +1,37 @@
-# My Gallery
+# MemoLens
 
-My Gallery is a private, local-first visual notebook for photos that need context.
+MemoLens is a private, local-first memory gallery for photos that need context.
 
-Save an image from your camera or library, add a typed or dictated caption, then search by what the image means instead of scrolling through a crowded camera roll.
+Save a photo from your camera or library, add a typed or dictated caption, choose a mood, add tags, then find the memory by what it meant instead of scrolling through a crowded camera roll.
 
 ## Why It Exists
 
-Most gallery apps are good at storing photos, but not always good at remembering why a photo mattered. My Gallery focuses on the smaller set of images that need notes: receipts, whiteboards, screenshots, study material, visual references, documents, and personal moments.
+Most gallery apps store everything. MemoLens is for the smaller set of images you actually need to remember: receipts, whiteboards, screenshots, study material, visual references, documents, and personal moments.
 
 ## Features
 
 - Google sign-in on Web, Android, and iOS.
-- Add images from camera or photo library.
+- Add photos from camera or photo library without forced cropping.
 - Type captions or dictate them with speech recognition.
-- Search saved images by caption and tag.
-- Mark important images as favorites.
-- Add tags for quick grouping and filtering.
+- Add moods, tags, and favorites.
+- Search memories by caption, mood, tag, or source.
 - Store captions, profile state, theme, and native image copies locally.
-- Edit captions, tags, and favorite state after saving.
+- Edit captions, moods, tags, and favorite state after saving.
 - Share saved images through the native share sheet with the actual image file on mobile.
 - Toggle light and dark mode.
-- Manage local data, sign-out, and release info from Settings.
+- Manage local data, sign-out, privacy, and release info from Settings.
 - Receive compatible UI/JavaScript updates through EAS Update.
 
 ## Screens
 
-- Login
-- Gallery
-- Add caption
-- Image detail
+- MemoLens onboarding
+- Memories home
+- Create Memory
+- Memory detail
 - Settings
 - Share flow
 
-Screenshots and store artwork are tracked in [Play Store listing draft](docs/play-store-listing-draft.md).
+Store copy and launch notes are tracked in [Play Store listing draft](docs/play-store-listing-draft.md).
 
 ## Tech Stack
 
@@ -97,7 +96,7 @@ Use these app identifiers when creating OAuth clients:
 - iOS bundle ID: `com.ablespace.mygallery`
 - Web local origin: `http://localhost:8081`
 
-For Android, the OAuth client must include the SHA-1 certificate for the build being tested. Development/debug builds, EAS builds, and Play Store app-signing builds can have different SHA-1 values.
+For Android, the OAuth client must include the SHA-1 certificate for the build being tested. Development/debug builds, EAS builds, and Play Store app-signing builds can have different SHA-1 values. If Google sign-in starts failing after a Play Store upload, add the Play app-signing SHA-1 to the Android OAuth client.
 
 ## Quality Checks
 
@@ -127,31 +126,22 @@ Production Android App Bundle:
 npm run build:android:production
 ```
 
-Preview over-the-air update:
-
-```bash
-npm run update:preview -- --message "Short update note"
-```
-
 Production over-the-air update:
 
 ```bash
 npm run update:production -- --message "Short update note"
 ```
 
-EAS Update is for compatible JavaScript, UI, copy, and asset changes. Build a new APK/AAB when native code, permissions, native packages, Expo SDK version, Google native auth setup, or runtime version changes.
-
-More detail lives in [Release and product plan](docs/release-and-product-plan.md).
-Recent shipping notes live in [Changelog](CHANGELOG.md).
+EAS Update can ship compatible JavaScript, UI, copy, and asset changes to installed builds with the same runtime version. Build and upload a new APK/AAB when native code, permissions, native packages, Expo SDK version, Google native auth setup, app icon, package config, or runtime version changes.
 
 ## Product Roadmap
 
 Near-term:
 
-- Better caption templates when sharing.
-- Search filters for date and source.
-- Privacy policy URL in app settings.
+- Share cards that combine photo, caption, date, and MemoLens branding.
+- Date/source search filters.
 - Import/export backup.
+- Closed-test feedback capture.
 
 Later:
 
@@ -163,6 +153,6 @@ Later:
 
 ## Privacy Direction
 
-My Gallery is local-first. Images and captions are stored on the device unless the user chooses to share them. Google Sign-In is used for identity, and camera, photo library, microphone, and speech recognition permissions are requested only when the related feature is used.
+MemoLens is local-first. Images, captions, moods, and tags are stored on the device unless the user chooses to share them. Google Sign-In is used for identity, and camera, photo library, microphone, and speech recognition permissions are requested only when the related feature is used.
 
-Before a production Play Store release, publish a full privacy policy and align it with the final feature set. A starter policy draft lives in [Privacy policy draft](docs/privacy-policy-draft.md).
+A starter policy draft lives in [Privacy policy draft](docs/privacy-policy-draft.md).

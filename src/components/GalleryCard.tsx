@@ -19,6 +19,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
     new Date(item.createdAt),
   );
   const visibleTags = item.tags?.slice(0, 2) ?? [];
+  const mood = item.mood ?? (item.isFavorite ? 'Favorite' : undefined);
 
   useEffect(() => {
     Animated.timing(entrance, {
@@ -62,7 +63,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
       ]}
     >
       <Pressable
-        accessibilityLabel={`Open ${item.caption || 'gallery image'}`}
+        accessibilityLabel={`Open ${item.caption || 'memory'}`}
         accessibilityRole="button"
         onPress={() => onPress(item)}
         onPressIn={() => pressTo(0.985)}
@@ -79,7 +80,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
       >
         <View style={styles.imageWrap}>
           <Image
-            accessibilityLabel={item.caption || 'Gallery image'}
+            accessibilityLabel={item.caption || 'MemoLens memory'}
             resizeMode="cover"
             source={{ uri: item.imageUri }}
             style={[
@@ -121,18 +122,34 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
         </View>
 
         <View style={styles.body}>
+          {mood ? (
+            <View
+              style={[
+                styles.moodPill,
+                {
+                  backgroundColor: theme.colors.accentSoft,
+                  borderColor: theme.colors.border,
+                  borderRadius: theme.radius.sm,
+                },
+              ]}
+            >
+              <Text numberOfLines={1} style={[styles.moodText, { color: theme.colors.accent }]}>
+                {mood}
+              </Text>
+            </View>
+          ) : null}
           <View style={styles.captionRow}>
             <Text numberOfLines={2} style={[styles.caption, { color: theme.colors.text }]}>
               {item.caption || 'Untitled memory'}
             </Text>
             <Pressable
-              accessibilityLabel={`Share ${item.caption || 'gallery image'}`}
+              accessibilityLabel={`Share ${item.caption || 'memory'}`}
               accessibilityRole="button"
               onPress={handleShare}
               style={({ pressed }) => [
                 styles.shareButton,
                 {
-                  backgroundColor: theme.colors.primarySoft,
+                  backgroundColor: theme.colors.surfaceAlt,
                   borderColor: theme.colors.border,
                   borderRadius: theme.radius.sm,
                   opacity: pressed ? 0.72 : 1,
@@ -142,7 +159,9 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
               <Text style={[styles.shareText, { color: theme.colors.text }]}>Share</Text>
             </Pressable>
           </View>
-          <Text style={[styles.meta, { color: theme.colors.muted }]}>{created}</Text>
+          <Text style={[styles.meta, { color: theme.colors.muted }]}>
+            {created} · {item.source === 'camera' ? 'Captured' : 'Saved'}
+          </Text>
           {visibleTags.length ? (
             <View style={styles.tagRow}>
               {visibleTags.map((tag) => (
@@ -187,7 +206,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
 const styles = StyleSheet.create({
   body: {
     gap: 8,
-    minHeight: 112,
+    minHeight: 132,
     padding: 12,
   },
   caption: {
@@ -232,6 +251,18 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: 12,
     fontWeight: '800',
+    letterSpacing: 0,
+  },
+  moodPill: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    maxWidth: '100%',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  moodText: {
+    fontSize: 11,
+    fontWeight: '900',
     letterSpacing: 0,
   },
   shareButton: {

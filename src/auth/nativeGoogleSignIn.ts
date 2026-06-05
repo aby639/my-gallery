@@ -82,6 +82,12 @@ export async function clearNativeGoogleSession(): Promise<void> {
   configureNativeGoogleSignIn();
 
   try {
+    await GoogleSignin.revokeAccess();
+  } catch {
+    // Revoking access is best effort; sign-out below should still clear the local session.
+  }
+
+  try {
     await GoogleSignin.signOut();
   } catch {
     // If Google has no cached native session, app sign-out should still complete.

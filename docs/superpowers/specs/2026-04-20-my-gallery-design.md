@@ -1,4 +1,4 @@
-﻿# My Gallery - Ablespace React Native Assignment Design
+# MemoLens - Ablespace React Native Assignment Design
 
 Date: 2026-04-20
 Project folder: D:\Downloads\my_gallary

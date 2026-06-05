@@ -24,10 +24,10 @@ export function SearchBar({ value, onChangeText, theme }: SearchBarProps) {
         <Text style={[styles.icon, { color: theme.colors.text }]}>S</Text>
       </View>
       <TextInput
-        accessibilityLabel="Search captions"
+        accessibilityLabel="Search memories"
         autoCorrect={false}
         onChangeText={onChangeText}
-        placeholder="Search captions, tags, source"
+        placeholder="Search memories, moods, tags"
         placeholderTextColor={theme.colors.muted}
         style={[styles.input, { color: theme.colors.text }]}
         value={value}

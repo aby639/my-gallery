@@ -44,8 +44,8 @@ export function SettingsScreen({
 
   const handleClearGallery = async () => {
     const confirmed = await confirmDestructiveAction(
-      'Clear saved gallery?',
-      'This removes saved images, captions, favorites, and tags from this device.',
+      'Clear saved memories?',
+      'This removes saved images, captions, moods, favorites, and tags from this device.',
     );
 
     if (!confirmed) {
@@ -55,13 +55,13 @@ export function SettingsScreen({
     await clearGalleryItems();
     clearPersistedGalleryImages();
     setItemCount(0);
-    setStatus({ message: 'Local gallery cleared from this device.', tone: 'success' });
+    setStatus({ message: 'Local memories cleared from this device.', tone: 'success' });
   };
 
   const handleSignOut = async () => {
     const confirmed = await confirmDestructiveAction(
       'Sign out now?',
-      'You will return to the Google login screen, but local gallery data on this device will stay in place.',
+      'You will return to the Google login screen, but local memories on this device will stay in place.',
     );
 
     if (!confirmed) {
@@ -71,7 +71,7 @@ export function SettingsScreen({
     await onSignOut();
   };
 
-  const appVersion = Constants.expoConfig?.version ?? '1.1.0';
+  const appVersion = Constants.expoConfig?.version ?? '1.2.0';
   const releaseChannel = Updates.channel ?? 'preview';
   const runtimeVersion = Updates.runtimeVersion ?? '1.0.0';
   const hostedPrivacyPolicyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL?.trim();
@@ -97,7 +97,7 @@ export function SettingsScreen({
           <View style={styles.headerCopy}>
             <Text style={[styles.title, { color: theme.colors.text }]}>Settings</Text>
             <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
-              Account, privacy, appearance, and local storage controls.
+              Account, privacy, appearance, and local memory controls.
             </Text>
           </View>
         </View>
@@ -116,7 +116,7 @@ export function SettingsScreen({
         </SectionCard>
 
         <SectionCard
-          body="Everything in the gallery is stored locally on this device unless you actively share it."
+          body="Everything in MemoLens is stored locally on this device unless you actively share it."
           theme={theme}
           title="Storage and privacy"
         >
@@ -137,10 +137,10 @@ export function SettingsScreen({
             variant="secondary"
             accessibilityHint="Open the app privacy policy"
           />
-          <PrimaryButton icon="!" label="Clear local gallery" onPress={handleClearGallery} theme={theme} variant="danger" />
+          <PrimaryButton icon="!" label="Clear local memories" onPress={handleClearGallery} theme={theme} variant="danger" />
         </SectionCard>
 
-        <SectionCard body="This build is ready for tester installs and OTA UI updates." theme={theme} title="Release info">
+        <SectionCard body="This build is ready for tester installs and compatible OTA UI updates." theme={theme} title="Release info">
           <InfoCard label="Runtime" theme={theme} value={runtimeVersion} />
           <Text style={[styles.detailText, { color: theme.colors.muted }]}>
             Publish a new Android App Bundle when native packages, permissions, Google auth config, or runtime version

@@ -15,7 +15,8 @@ type NavigatorWithShare = Navigator & {
 };
 
 export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> {
-  const caption = item.caption || 'My Gallery image';
+  const caption = item.caption || 'MemoLens memory';
+  const shareTitle = item.mood ? `${item.mood} memory` : 'MemoLens';
 
   try {
     if (Platform.OS === 'web') {
@@ -24,7 +25,7 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
       if (navigatorWithShare?.share) {
         await navigatorWithShare.share({
           text: caption,
-          title: 'My Gallery',
+          title: shareTitle,
           url: item.imageUri,
         });
         return { message: 'Shared from the browser.', tone: 'success' };
@@ -48,8 +49,8 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
     }
 
     await Share.share({
-      message: caption,
-      title: 'My Gallery',
+      message: `${caption}\n\nMade with MemoLens`,
+      title: shareTitle,
     });
 
     return { message: 'Caption share sheet opened. Image sharing is not available on this device.', tone: 'info' };

@@ -1,17 +1,18 @@
-# My Gallery Privacy Policy Draft
+# MemoLens Privacy Policy Draft
 
-Last updated: 24 April 2026
+Last updated: 5 June 2026
 
 This draft is for repository and Play Store preparation. Publish a final hosted version before production release.
 
-## What My Gallery Does
+## What MemoLens Does
 
-My Gallery is a local-first photo notebook. It lets users:
+MemoLens is a local-first memory gallery. It lets users:
 
 - Sign in with Google.
-- Add images from the camera or photo library.
+- Add photos from the camera or photo library.
 - Write or dictate captions.
-- Add tags and favorites.
+- Add moods, tags, and favorites.
+- Search saved memories.
 - Share images to other apps.
 
 ## Data We Collect
@@ -26,20 +27,21 @@ This identity data is used to show the signed-in account inside the app.
 
 ## Data Stored On Device
 
-My Gallery stores the following data locally on the device:
+MemoLens stores the following data locally on the device:
 
 - Saved image copies
 - Captions
+- Moods
 - Tags
 - Favorite state
 - Theme preference
 - Signed-in profile state
 
-The app is local-first. Saved gallery content is not uploaded to a custom backend by this version of the app.
+The app is local-first. Saved memory content is not uploaded to a custom backend by this version of the app.
 
 ## Permissions
 
-My Gallery requests permissions only when the related feature is used:
+MemoLens requests permissions only when the related feature is used:
 
 - Camera permission to capture a new image
 - Photo library permission to choose an existing image
@@ -48,7 +50,7 @@ My Gallery requests permissions only when the related feature is used:
 
 ## Sharing
 
-When the user taps Share, the selected image is passed to the destination app chosen by the user. My Gallery does not control how the destination app stores or processes shared content.
+When the user taps Share, the selected image is passed to the destination app chosen by the user. MemoLens does not control how the destination app stores or processes shared content.
 
 ## Third-Party Services
 
@@ -58,11 +60,11 @@ Google may process account information according to Google's own privacy terms a
 
 ## Data Retention
 
-Local gallery data stays on the device until the user deletes individual items, clears the local gallery from Settings, or uninstalls the app.
+Local memory data stays on the device until the user deletes individual memories, clears local memories from Settings, or uninstalls the app.
 
 ## Children's Privacy
 
-My Gallery is not intended for children under the age required by local law to use the service independently.
+MemoLens is not intended for children under the age required by local law to use the service independently.
 
 ## Contact
 

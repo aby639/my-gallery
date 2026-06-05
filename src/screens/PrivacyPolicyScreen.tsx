@@ -27,11 +27,11 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
 
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Privacy Policy</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.muted }]}>Last updated: 24 April 2026</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.muted }]}>Last updated: 5 June 2026</Text>
         </View>
 
         <PolicySection
-          body="My Gallery is a local-first photo notebook. You can sign in with Google, save photos from the camera or library, write or dictate captions, add tags and favorites, and share images to other apps."
+          body="MemoLens is a local-first memory gallery. You can sign in with Google, save photos from the camera or library, write or dictate captions, add moods, tags and favorites, and share images to other apps."
           themePreference={themePreference}
           title="What the app does"
         />
@@ -41,7 +41,7 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
           title="Data collected"
         />
         <PolicySection
-          body="Saved image copies, captions, tags, favorites, theme preference, and signed-in profile state are stored locally on the device in this version of the app."
+          body="Saved image copies, captions, moods, tags, favorites, theme preference, and signed-in profile state are stored locally on the device in this version of the app."
           themePreference={themePreference}
           title="Data stored on device"
         />
@@ -56,7 +56,7 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
           title="Sharing"
         />
         <PolicySection
-          body="Gallery data stays on the device until you delete items, clear the local gallery in Settings, or uninstall the app."
+          body="MemoLens data stays on the device until you delete memories, clear local memories in Settings, or uninstall the app."
           themePreference={themePreference}
           title="Retention"
         />

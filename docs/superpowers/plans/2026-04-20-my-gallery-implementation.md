@@ -1,8 +1,8 @@
-# My Gallery Implementation Plan
+# MemoLens Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the Ablespace My Gallery assignment as a polished Expo React Native app for iOS, Android, and Web.
+**Goal:** Build MemoLens, the Ablespace React Native assignment app, as a polished Expo React Native app for iOS, Android, and Web.
 
 **Architecture:** The app uses Expo managed React Native with React Navigation. Screen components own UI flow, while small modules own persistence, filtering, auth configuration, voice capture, and sharing so they can be understood and tested independently.
 

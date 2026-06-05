@@ -90,7 +90,7 @@ export function useGoogleAuth() {
       return {
         user: {
           id: profile.sub,
-          name: profile.name ?? 'Gallery User',
+          name: profile.name ?? 'MemoLens User',
           email: profile.email,
           photoUrl: profile.picture,
         },

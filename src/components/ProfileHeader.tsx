@@ -15,7 +15,7 @@ type ProfileHeaderProps = {
 export function ProfileHeader({ user, theme, themePreference, onOpenSettings, onToggleTheme }: ProfileHeaderProps) {
   const { width } = useWindowDimensions();
   const isCompact = width < 520;
-  const initial = user.name.trim().charAt(0).toUpperCase() || 'G';
+  const initial = user.name.trim().charAt(0).toUpperCase() || 'M';
   const firstName = user.name.trim().split(/\s+/)[0] || 'there';
 
   return (
@@ -30,7 +30,6 @@ export function ProfileHeader({ user, theme, themePreference, onOpenSettings, on
         },
       ]}
     >
-      <View style={[styles.accentRail, { backgroundColor: theme.colors.accent, borderRadius: theme.radius.sm }]} />
       <View style={styles.topRow}>
         <View style={[styles.profile, isCompact ? styles.profileCompact : undefined]}>
           {user.photoUrl ? (
@@ -58,9 +57,9 @@ export function ProfileHeader({ user, theme, themePreference, onOpenSettings, on
             </View>
           )}
           <View style={styles.profileText}>
-            <Text style={[styles.eyebrow, { color: theme.colors.accent }]}>Welcome back, {firstName}</Text>
+            <Text style={[styles.eyebrow, { color: theme.colors.accent }]}>Good to see you, {firstName}</Text>
             <Text numberOfLines={1} style={[styles.name, { color: theme.colors.text }]}>
-              {user.name}
+              MemoLens
             </Text>
             {user.email ? (
               <Text numberOfLines={1} style={[styles.email, { color: theme.colors.muted }]}>
@@ -81,7 +80,7 @@ export function ProfileHeader({ user, theme, themePreference, onOpenSettings, on
       </View>
 
       <Text style={[styles.welcomeCopy, { color: theme.colors.textSoft }]}>
-        Keep the visual, save the context, and find it again without digging through your camera roll.
+        Keep the photo, mood, caption, and tags together so the useful memories stay easy to find.
       </Text>
     </View>
   );
@@ -114,13 +113,6 @@ function HeaderAction({ label, onPress, theme }: HeaderActionProps) {
 }
 
 const styles = StyleSheet.create({
-  accentRail: {
-    bottom: 18,
-    position: 'absolute',
-    right: 18,
-    top: 18,
-    width: 4,
-  },
   action: {
     borderWidth: 1,
     minHeight: 42,
@@ -160,7 +152,6 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     gap: 14,
-    overflow: 'hidden',
     padding: 18,
   },
   email: {

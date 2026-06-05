@@ -1,21 +1,21 @@
-# My Gallery Release And Product Plan
+# MemoLens Release And Product Plan
 
 ## The Release Model
 
 Use both Play Store updates and EAS Update. They solve different problems.
 
 - Play Store is the main public distribution channel. Users install from Play once, get trusted updates, and do not deal with APK files.
-- EAS Update is for fast JavaScript, UI, copy, styling, and asset fixes after a compatible Play Store or preview build is already installed.
-- New APK/AAB builds are still required for native changes: permissions, Expo SDK upgrades, native dependencies, Google Sign-In native setup, app icons, package identifiers, and runtime version changes.
+- EAS Update is for fast JavaScript, UI, copy, styling, and compatible asset fixes after a Play Store or preview build is already installed.
+- New APK/AAB builds are still required for native changes: permissions, Expo SDK upgrades, native dependencies, Google Sign-In native setup, app icons, package identifiers, version codes, and runtime version changes.
 
 ## Normal Workflow
 
 1. Build locally and test on emulator/device.
 2. Push code to GitHub.
-3. Create a preview build for testers.
-4. Publish small UI fixes with EAS Update on the `preview` channel.
+3. Create a preview build for quick tester checks.
+4. Publish compatible UI fixes with EAS Update on the `preview` or `production` channel.
 5. Build a production Android App Bundle for Play Store.
-6. Release first through Play internal testing, then closed/open testing, then production.
+6. Release first through Play internal testing, then closed testing, then production.
 7. Use EAS Update for safe UI/JS updates between Play Store releases.
 8. Use Play Store releases for native or major updates.
 
@@ -31,12 +31,6 @@ Production App Bundle for Google Play:
 
 ```bash
 npm run build:android:production
-```
-
-Preview OTA update:
-
-```bash
-npm run update:preview -- --message "Short update note"
 ```
 
 Production OTA update:
@@ -55,35 +49,36 @@ npm run update:production -- --message "Short update note"
 
 ## Play Store Checklist
 
-- Create a Google Play Console developer account.
 - Create the app with package name `com.ablespace.mygallery`.
-- Upload an Android App Bundle, not only an APK.
-- Enable Play App Signing.
+- Upload Android App Bundles, not only APKs.
+- Keep Play App Signing enabled.
 - Add the Play app-signing SHA-1 certificate to the Google Cloud Android OAuth client.
 - Add privacy policy, app access instructions, content rating, data safety, screenshots, icon, feature graphic, and store description.
-- Start with internal testing, then closed/open testing, then production.
+- Use internal testing for quick verification.
+- For production access on a new personal developer account, run a closed test with at least 12 opted-in testers for at least 14 days, then apply for production access.
 
 ## Product Positioning
 
-My Gallery should not compete with Google Photos as a full replacement. The strongest niche is:
+MemoLens should not compete with Google Photos as a full replacement. The strongest niche is:
 
-> A private, local-first memory gallery where every saved image has a searchable caption that can be typed or dictated.
+> A private, local-first memory gallery where every saved image has a searchable caption, mood, and tags.
 
 That makes the app useful for:
 
 - Students saving whiteboards, diagrams, notes, and screenshots.
 - People saving receipts, documents, and warranty photos.
-- Creators collecting visual references with voice notes.
+- Creators collecting visual references with voice captions.
 - Anyone who wants a small private image notebook instead of a huge cloud gallery.
 
 ## Product Roadmap
 
 Phase 1, make the current app feel complete:
 
-- Better caption sharing templates.
+- Share cards that combine photo, caption, date, and MemoLens branding.
 - Search filters for camera/library/date.
 - Import/export backup.
 - Empty-state sample tips.
+- Accessibility pass and larger text checks.
 
 Phase 2, make it genuinely useful:
 
@@ -98,6 +93,6 @@ Phase 3, make it Play Store-ready:
 
 - Crash reporting.
 - Analytics for core flows.
-- Privacy policy URL.
+- Hosted privacy policy URL.
 - Account deletion or local account reset flow.
-- Accessibility pass and larger text checks.
+- Closed-test feedback workflow.

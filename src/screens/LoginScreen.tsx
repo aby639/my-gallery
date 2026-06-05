@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useGoogleAuth } from '../auth/useGoogleAuth';
+import { AppLogo } from '../components/AppLogo';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { StatusBanner } from '../components/StatusBanner';
 import { ThemePreference } from '../storage/galleryStorage';
@@ -44,25 +45,17 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.poster}>
-          <View style={styles.brandRow}>
-            <View
-              style={[
-                styles.brandMark,
-                {
-                  backgroundColor: theme.colors.primary,
-                  borderRadius: theme.radius.md,
-                },
-              ]}
-            >
-              <View style={[styles.brandPhoto, { backgroundColor: theme.colors.primaryText, borderRadius: theme.radius.sm }]}>
-                <View style={[styles.brandDot, { backgroundColor: theme.colors.accent, borderRadius: 4 }]} />
-              </View>
+          <View style={styles.logoRow}>
+            <AppLogo animated size={86} theme={theme} />
+            <View style={styles.brandCopy}>
+              <Text style={[styles.brand, { color: theme.colors.text }]}>MemoLens</Text>
+              <Text style={[styles.tagline, { color: theme.colors.accent }]}>Save the photo. Keep the feeling.</Text>
             </View>
-            <Text style={[styles.brand, { color: theme.colors.text }]}>My Gallery</Text>
           </View>
-          <Text style={[styles.headline, { color: theme.colors.text }]}>Save the photo. Keep the sentence.</Text>
+          <Text style={[styles.headline, { color: theme.colors.text }]}>Private memories with the story still attached.</Text>
           <Text style={[styles.body, { color: theme.colors.muted }]}>
-            Sign in with Google, save images, dictate captions, search quickly, and share the moments that matter.
+            Save photos, write or dictate captions, add moods and tags, then find the moment again without digging
+            through your camera roll.
           </Text>
         </View>
 
@@ -87,6 +80,9 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
             onPress={handleGoogleSignIn}
             theme={theme}
           />
+          <Text style={[styles.privacyNote, { color: theme.colors.muted }]}>
+            Google is used for sign-in only. Your saved memories stay on this device unless you share them.
+          </Text>
           {showDemoFallback ? (
             <>
               <PrimaryButton
@@ -99,7 +95,7 @@ export function LoginScreen({ onSignIn, themePreference }: LoginScreenProps) {
               <Text style={[styles.note, { color: theme.colors.muted }]}>
                 {authWarning
                   ? 'Review fallback only. Add Google OAuth IDs to enable the required sign-in path.'
-                  : 'Development fallback only. The required flow is Continue with Google.'}
+                  : 'Development fallback only. Continue with Google is the production flow.'}
               </Text>
             </>
           ) : null}
@@ -122,32 +118,14 @@ const styles = StyleSheet.create({
     maxWidth: 520,
   },
   brand: {
-    fontSize: 16,
+    fontSize: 34,
     fontWeight: '900',
     letterSpacing: 0,
-    textTransform: 'uppercase',
   },
-  brandDot: {
-    height: 8,
-    position: 'absolute',
-    right: 7,
-    top: 7,
-    width: 8,
-  },
-  brandMark: {
-    alignItems: 'center',
-    height: 42,
-    justifyContent: 'center',
-    width: 42,
-  },
-  brandPhoto: {
-    height: 25,
-    width: 27,
-  },
-  brandRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 10,
+  brandCopy: {
+    flex: 1,
+    gap: 3,
+    minWidth: 0,
   },
   container: {
     alignSelf: 'center',
@@ -158,11 +136,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   headline: {
-    fontSize: 42,
+    fontSize: 41,
     fontWeight: '900',
     letterSpacing: 0,
-    lineHeight: 50,
+    lineHeight: 48,
     maxWidth: 620,
+  },
+  logoRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 14,
   },
   note: {
     fontSize: 12,
@@ -173,7 +156,17 @@ const styles = StyleSheet.create({
     gap: 14,
     marginBottom: 36,
   },
+  privacyNote: {
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
+  },
   safeArea: {
     flex: 1,
+  },
+  tagline: {
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 0,
   },
 });

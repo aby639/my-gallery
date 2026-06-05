@@ -1,72 +1,71 @@
-# My Gallery Play Store Listing Draft
+# MemoLens Play Store Listing Draft
 
 ## App Name
 
-My Gallery
+MemoLens
 
 ## Short Description
 
-Save photos with searchable captions and voice notes.
+Save photos with captions, moods, tags, and private search.
 
 ## Full Description
 
-My Gallery is a private visual notebook for the images you want to remember, explain, and find again.
+MemoLens is a private memory gallery for the photos you want to remember, explain, and find again.
 
-Save a photo from your camera or library, add a typed or dictated caption, then search your saved memories by what they mean instead of scrolling through a huge camera roll. My Gallery is local-first, so your saved images and captions stay on your device unless you choose to share them.
+Save a photo from your camera or library, add a typed or dictated caption, choose a mood, then search by what the moment meant instead of scrolling through a huge camera roll. MemoLens is local-first, so your saved images, captions, moods, and tags stay on your device unless you choose to share them.
 
 Use it for:
 
 - Study notes, whiteboards, and screenshots.
 - Receipts, warranty photos, and documents.
 - Creative references and quick visual ideas.
-- Personal moments with captions you can actually search later.
+- Personal moments with searchable captions.
 
 Key features:
 
 - Google sign-in.
-- Camera and photo library import.
+- Camera and photo library import without forced cropping.
 - Typed or voice captions.
-- Fast caption and tag search.
+- Mood and tag organization.
+- Fast memory search.
 - Favorites and quick filters.
 - Offline local storage.
 - Settings for local data and appearance.
-- Dark mode.
+- Dark and light mode.
 - Image sharing with the saved image file.
 
-My Gallery is not trying to replace your whole photo library. It is built for the smaller set of images that need context.
+MemoLens is not trying to replace your whole photo library. It is built for the smaller set of images that need a story attached.
 
 ## Screenshot Checklist
 
-1. Login screen with Google sign-in.
-2. Empty gallery with action buttons.
-3. Add caption screen with a selected image.
-4. Gallery with saved images, quick stats, favorites, and tag filters.
-5. Detail screen with caption edit, tags, favorite toggle, and share.
+1. MemoLens onboarding with Google sign-in.
+2. Empty memories screen with Create Memory action.
+3. Create Memory screen with selected photo, caption, mood, and tags.
+4. Memories home with saved cards, stats, search, favorites, moods, and tag filters.
+5. Memory detail with edit, favorite, share, and delete actions.
 6. Native Android share sheet showing an image preview.
 7. Settings screen with local-first privacy and storage actions.
-8. Dark mode gallery.
+8. Dark mode and light mode examples.
 
 ## Feature Graphic Idea
 
 Text:
 
-Save the photo. Keep the sentence.
+Save the photo. Keep the feeling.
 
 Visual:
 
-A clean phone mockup showing a photo card with a caption and search field.
+A clean phone mockup showing a memory card with a photo, caption, mood, and search field.
 
 ## Privacy Policy Draft Points
 
 This app currently:
 
-- Stores saved images and captions locally on the device.
+- Stores saved images, captions, moods, tags, and favorites locally on the device.
 - Uses Google Sign-In for account identity.
-- Does not upload gallery images to a custom backend.
+- Does not upload memory content to a custom backend.
 - Uses microphone and speech recognition only when the user starts caption dictation.
-- Uses camera and photo library only when the user chooses to add an image.
-
-Before production, publish a real privacy policy URL and keep it consistent with the final feature set.
+- Uses camera and photo library only when the user chooses to create a memory.
 
 Suggested app config:
 
@@ -84,6 +83,7 @@ Data handled locally:
 
 - User-added images.
 - User-written or dictated captions.
+- Moods, tags, favorites.
 - Theme preference.
 
 Data sharing:
@@ -99,8 +99,9 @@ Security notes:
 
 Ship these before Play Store production:
 
-- Privacy policy link.
-- Crash reporting.
+- Hosted privacy policy URL.
 - Accessibility pass.
+- Crash reporting.
+- At least 12 closed-test opted-in testers for 14 days, per current Play Console requirement for new personal developer accounts.
 
 Keep OCR, AI captions, and backup as post-launch upgrades.

@@ -7,6 +7,7 @@ export type GalleryItem = {
   caption: string;
   createdAt: string;
   source: GallerySource;
+  mood?: string;
   tags?: string[];
   isFavorite?: boolean;
 };

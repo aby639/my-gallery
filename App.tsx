@@ -18,7 +18,7 @@ import { GalleryUser } from './src/types/gallery';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
-  const [themePreference, setThemePreference] = useState<ThemePreference>('light');
+  const [themePreference, setThemePreference] = useState<ThemePreference>('dark');
   const [user, setUser] = useState<GalleryUser | null>(null);
   const theme = getAppTheme(themePreference);
 

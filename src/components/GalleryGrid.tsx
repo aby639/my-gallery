@@ -15,7 +15,7 @@ type GalleryGridProps = {
 
 export function GalleryGrid({ items, onItemPress, onItemShare, theme, ListEmptyComponent }: GalleryGridProps) {
   const { width } = useWindowDimensions();
-  const columns = width >= 1040 ? 4 : width >= 720 ? 3 : 2;
+  const columns = width >= 720 ? 3 : 2;
 
   const itemWidth = `${100 / columns}%` as DimensionValue;
 
