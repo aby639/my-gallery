@@ -31,7 +31,11 @@ export function PrimaryButton({
   const scale = useRef(new Animated.Value(1)).current;
   const colors = theme.colors;
   const buttonStyle = {
-    primary: { backgroundColor: colors.primary, borderColor: colors.primary },
+    primary: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+      boxShadow: `0 12px 28px ${colors.shadow}`,
+    },
     secondary: { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
     danger: { backgroundColor: colors.danger, borderColor: colors.danger },
     ghost: { backgroundColor: 'transparent', borderColor: 'transparent' },
@@ -72,6 +76,7 @@ export function PrimaryButton({
           styles.button,
           {
             borderRadius: theme.radius.md,
+            opacity: disabled ? 0.7 : 1,
           },
           buttonStyle,
           style,
@@ -97,9 +102,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     justifyContent: 'center',
-    minHeight: 48,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    minHeight: 52,
+    paddingHorizontal: 18,
+    paddingVertical: 13,
   },
   icon: {
     fontSize: 16,

@@ -31,7 +31,7 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
         </View>
 
         <PolicySection
-          body="MemoLens is a local-first memory gallery. You can sign in with Google, save photos from the camera or library, write or dictate captions, add moods, tags and favorites, and share images to other apps."
+          body="MemoLens is a local-first memory gallery. You can sign in with Google, save photos from the camera or library, write or dictate captions, record voice notes, add moods, tags and favorites, and share memories to other apps."
           themePreference={themePreference}
           title="What the app does"
         />
@@ -41,7 +41,7 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
           title="Data collected"
         />
         <PolicySection
-          body="Saved image copies, captions, moods, tags, favorites, theme preference, and signed-in profile state are stored locally on the device in this version of the app."
+          body="Saved image copies, voice notes, captions, moods, tags, favorites, theme preference, and signed-in profile state are stored locally on the device in this version of the app."
           themePreference={themePreference}
           title="Data stored on device"
         />
@@ -51,7 +51,7 @@ export function PrivacyPolicyScreen({ navigation, themePreference }: PrivacyPoli
           title="Permissions"
         />
         <PolicySection
-          body="When you tap Share, the selected image is passed to the target app you choose. That destination app handles the shared content under its own policies."
+          body="When you tap Share, the selected photo or voice note is passed to the target app you choose. That destination app handles the shared content under its own policies."
           themePreference={themePreference}
           title="Sharing"
         />

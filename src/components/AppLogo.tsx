@@ -29,6 +29,9 @@ export function AppLogo({ animated = false, size = 72, theme }: AppLogoProps) {
     return () => loop.stop();
   }, [animated, pulse]);
 
+  const cameraSize = size * 0.52;
+  const lensSize = size * 0.26;
+
   return (
     <Animated.View
       accessibilityRole="image"
@@ -38,22 +41,34 @@ export function AppLogo({ animated = false, size = 72, theme }: AppLogoProps) {
         {
           backgroundColor: theme.colors.surfaceRaised,
           borderColor: theme.colors.border,
-          borderRadius: Math.min(8, size * 0.16),
+          borderRadius: Math.min(24, size * 0.24),
           height: size,
           transform: [{ scale }],
           width: size,
+          boxShadow: `0 18px 48px ${theme.colors.shadow}`,
         },
       ]}
     >
-      <View style={[styles.glow, { backgroundColor: theme.colors.secondary, borderRadius: Math.min(8, size * 0.14) }]} />
+      <View style={[styles.glow, { backgroundColor: theme.colors.primary, borderRadius: Math.min(18, size * 0.18) }]} />
       <View
         style={[
-          styles.camera,
+          styles.cameraBack,
           {
-            borderColor: theme.colors.accent,
-            borderRadius: Math.min(8, size * 0.15),
-            height: size * 0.38,
-            width: size * 0.5,
+            borderColor: theme.colors.warm,
+            borderRadius: Math.min(18, size * 0.18),
+            height: cameraSize,
+            width: cameraSize * 1.12,
+          },
+        ]}
+      />
+      <View
+        style={[
+          styles.cameraFront,
+          {
+            borderColor: theme.colors.secondary,
+            borderRadius: Math.min(18, size * 0.17),
+            height: cameraSize * 0.88,
+            width: cameraSize,
           },
         ]}
       >
@@ -61,21 +76,21 @@ export function AppLogo({ animated = false, size = 72, theme }: AppLogoProps) {
           style={[
             styles.lens,
             {
-              borderColor: theme.colors.secondary,
-              borderRadius: size * 0.13,
-              height: size * 0.27,
-              width: size * 0.27,
+              borderColor: theme.colors.primary,
+              borderRadius: lensSize,
+              height: lensSize,
+              width: lensSize,
             },
           ]}
         />
-        <View style={[styles.lensDot, { backgroundColor: theme.colors.cyan, borderRadius: size * 0.03 }]} />
+        <View style={[styles.lensDot, { backgroundColor: theme.colors.cyan, borderRadius: size * 0.04 }]} />
       </View>
       <View
         style={[
           styles.flash,
           {
             backgroundColor: theme.colors.warm,
-            borderRadius: Math.min(6, size * 0.08),
+            borderRadius: Math.min(8, size * 0.08),
             height: size * 0.1,
             width: size * 0.1,
           },
@@ -87,33 +102,37 @@ export function AppLogo({ animated = false, size = 72, theme }: AppLogoProps) {
 }
 
 const styles = StyleSheet.create({
-  camera: {
+  cameraBack: {
+    borderWidth: 5,
+    position: 'absolute',
+    transform: [{ rotate: '-2deg' }],
+  },
+  cameraFront: {
     alignItems: 'center',
-    borderWidth: 4,
+    borderWidth: 5,
     justifyContent: 'center',
+    transform: [{ rotate: '3deg' }],
   },
   flash: {
     position: 'absolute',
     right: '23%',
-    top: '26%',
+    top: '25%',
   },
   glow: {
-    bottom: 9,
-    left: 9,
-    opacity: 0.18,
+    bottom: 10,
+    left: 10,
+    opacity: 0.24,
     position: 'absolute',
-    right: 9,
-    top: 9,
+    right: 10,
+    top: 10,
   },
   lens: {
-    borderWidth: 4,
+    borderWidth: 5,
   },
   lensDot: {
-    height: 6,
+    height: 7,
     position: 'absolute',
-    right: '22%',
-    top: '32%',
-    width: 6,
+    width: 7,
   },
   logo: {
     alignItems: 'center',
@@ -124,7 +143,7 @@ const styles = StyleSheet.create({
   spark: {
     fontWeight: '900',
     position: 'absolute',
-    right: '16%',
-    top: '10%',
+    right: '14%',
+    top: '9%',
   },
 });

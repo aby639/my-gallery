@@ -1,36 +1,57 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
-import { useCallback, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Image, ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { EmptyState } from '../components/EmptyState';
-import { GalleryGrid } from '../components/GalleryGrid';
-import { PrimaryButton } from '../components/PrimaryButton';
-import { ProfileHeader } from '../components/ProfileHeader';
-import { SearchBar } from '../components/SearchBar';
+import { MemoLensLogo } from '../components/MemoLensLogo';
 import { StatusBanner } from '../components/StatusBanner';
-import { collectGalleryTags, filterGalleryItems } from '../gallery/filterGalleryItems';
+import {
+  GlassCard,
+  MemoBottomNav,
+  MemoIcon,
+  MemoryCard,
+  MemoryCardData,
+  ScreenBackground,
+  formatMemoryDate,
+  getMemoryTitle,
+  gradients,
+  memoColors,
+  memoFont,
+} from '../components/memolens/MemoLensKit';
+import { filterGalleryItems } from '../gallery/filterGalleryItems';
 import { loadGalleryItems, ThemePreference } from '../storage/galleryStorage';
-import { AppTheme, getAppTheme } from '../theme/theme';
-import { GalleryFilter, GalleryItem, GalleryUser, RootStackParamList } from '../types/gallery';
+import { getAppTheme } from '../theme/theme';
+import { GalleryItem, GallerySource, GalleryUser, RootStackParamList } from '../types/gallery';
 import { getPersistableImageUri } from '../utils/imageAssets';
-import { shareGalleryItem } from '../utils/shareGalleryItem';
 
 type GalleryScreenProps = NativeStackScreenProps<RootStackParamList, 'Gallery'> & {
-  user: GalleryUser;
   themePreference: ThemePreference;
-  onToggleTheme: () => void;
+  user: GalleryUser;
 };
 
-export function GalleryScreen({ navigation, onToggleTheme, themePreference, user }: GalleryScreenProps) {
-  const theme = getAppTheme(themePreference);
+type StatusState = {
+  message: string;
+  tone: 'info' | 'error' | 'success';
+};
+
+type HomeMemory = MemoryCardData & {
+  item?: GalleryItem;
+  source?: GallerySource;
+  tags?: string[];
+};
+
+const fallbackMemoryImage = require('../../assets/memolens/sunset.jpg');
+
+export function GalleryScreen({ navigation, user }: GalleryScreenProps) {
+  const insets = useSafeAreaInsets();
+  const searchRef = useRef<TextInput>(null);
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [activeFilter, setActiveFilter] = useState<GalleryFilter>('all');
-  const [activeTag, setActiveTag] = useState<string>();
-  const [status, setStatus] = useState<{ message: string; tone: 'info' | 'error' | 'success' }>();
+  const [status, setStatus] = useState<StatusState>();
+  const bannerTheme = useMemo(() => getAppTheme('dark'), []);
 
   const loadItems = useCallback(async () => {
     setItems(await loadGalleryItems());
@@ -42,409 +63,486 @@ export function GalleryScreen({ navigation, onToggleTheme, themePreference, user
     }, [loadItems]),
   );
 
+  const savedMatches = useMemo(() => filterGalleryItems(items, searchText), [items, searchText]);
+  const memories = useMemo(() => savedMatches.map(createSavedMemory).slice(0, 8), [savedMatches]);
+
+  const columns = useMemo(() => splitColumns(memories), [memories]);
+  const firstName = getFirstName(user.name);
+
   const openPicker = async () => {
+    setStatus(undefined);
+
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      setStatus({ message: 'Photo library permission was denied.', tone: 'error' });
+      setStatus({ message: 'Photo library permission is needed to add a memory.', tone: 'error' });
       return;
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: false,
-      base64: Platform.OS === 'web',
-      mediaTypes: ['images'],
-      quality: 0.85,
+      base64: true,
+      quality: 0.86,
     });
 
-    if (result.canceled) {
-      setStatus({ message: 'Image selection cancelled.', tone: 'info' });
+    if (result.canceled || !result.assets[0]) {
+      setStatus({ message: 'Photo selection cancelled.', tone: 'info' });
       return;
     }
 
-    navigation.navigate('AddItem', {
-      imageUri: getPersistableImageUri(result.assets[0]),
-      source: 'library',
-    });
+    openCreateFlow(result.assets[0], 'library');
   };
 
   const openCamera = async () => {
-    if (Platform.OS === 'web') {
-      setStatus({
-        message: 'Camera capture depends on browser support. Use the image picker if it is unavailable.',
-        tone: 'info',
-      });
-    }
+    setStatus(undefined);
 
     const permission = await ImagePicker.requestCameraPermissionsAsync();
 
     if (!permission.granted) {
-      setStatus({ message: 'Camera permission was denied.', tone: 'error' });
+      setStatus({ message: 'Camera permission is needed to capture a memory.', tone: 'error' });
       return;
     }
 
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: false,
-      base64: Platform.OS === 'web',
-      mediaTypes: ['images'],
-      quality: 0.85,
+      base64: true,
+      quality: 0.86,
     });
 
-    if (result.canceled) {
+    if (result.canceled || !result.assets[0]) {
       setStatus({ message: 'Camera capture cancelled.', tone: 'info' });
       return;
     }
 
+    openCreateFlow(result.assets[0], 'camera');
+  };
+
+  const openCreateFlow = (asset: ImagePicker.ImagePickerAsset, source: GallerySource) => {
     navigation.navigate('AddItem', {
-      imageUri: getPersistableImageUri(result.assets[0]),
-      source: 'camera',
+      imageUri: getPersistableImageUri(asset),
+      source,
     });
   };
 
-  const filteredItems = filterGalleryItems(items, searchText, activeFilter, activeTag);
-  const hasSearch = searchText.trim().length > 0;
-  const hasRefinements = hasSearch || activeFilter !== 'all' || Boolean(activeTag);
-  const favoriteCount = items.filter((item) => item.isFavorite).length;
-  const taggedCount = items.filter((item) => (item.tags?.length ?? 0) > 0).length;
-  const topTags = collectGalleryTags(items, 6);
-  const visibleTags =
-    activeTag && !topTags.some((tag) => tag.toLowerCase() === activeTag.toLowerCase())
-      ? [activeTag, ...topTags].slice(0, 6)
-      : topTags;
-
-  const clearRefinements = () => {
-    setSearchText('');
-    setActiveFilter('all');
-    setActiveTag(undefined);
+  const openVoice = () => {
+    navigation.navigate('AddItem', { source: 'voice' });
   };
 
-  const shareItem = async (item: GalleryItem) => {
-    setStatus(await shareGalleryItem(item));
+  const openMemory = (memory: HomeMemory) => {
+    if (memory.item) {
+      navigation.navigate('Detail', { itemId: memory.item.id });
+    }
   };
 
-  const explainVoiceCapture = () => {
-    setStatus({
-      message: 'Choose a photo first, then use Dictate caption while creating the memory.',
-      tone: 'info',
-    });
-  };
+  const tagCount = new Set(items.flatMap((item) => item.tags ?? [])).size;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.page}>
-        <ProfileHeader
-          onOpenSettings={() => navigation.navigate('Settings')}
-          onToggleTheme={onToggleTheme}
-          theme={theme}
-          themePreference={themePreference}
-          user={user}
-        />
-
-        <View style={styles.titleRow}>
-          <View style={styles.titleText}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>Memories</Text>
-            <Text style={[styles.subtitle, { color: theme.colors.muted }]}>
-              Save fewer photos, remember more context, and keep meaningful visuals ready offline.
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={[
-            styles.actionPanel,
-            {
-              backgroundColor: theme.colors.surfaceRaised,
-              borderColor: theme.colors.border,
-              borderRadius: theme.radius.md,
-              boxShadow: `0 16px 38px ${theme.colors.shadow}`,
-            },
-          ]}
+    <ScreenBackground>
+      <SafeAreaView edges={['top', 'left', 'right']} style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={[styles.content, { paddingBottom: 30 + insets.bottom }]}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          style={styles.scroller}
         >
-          <View style={styles.actionCopy}>
-            <Text style={[styles.actionTitle, { color: theme.colors.text }]}>Create Memory</Text>
-            <Text style={[styles.actionBody, { color: theme.colors.muted }]}>
-              Capture a moment, add the story, pick a mood, and save it privately on this device.
-            </Text>
-          </View>
-          <View style={styles.actionRow}>
-            <PrimaryButton icon="P" label="Photo" onPress={openPicker} theme={theme} />
-            <PrimaryButton icon="C" label="Camera" onPress={openCamera} theme={theme} variant="secondary" />
-            <PrimaryButton icon="V" label="Voice" onPress={explainVoiceCapture} theme={theme} variant="secondary" />
-          </View>
-        </View>
-
-        <View style={styles.statsRow}>
-          <StatPill label="Memories" theme={theme} value={items.length.toString()} />
-          <StatPill label="Favorites" theme={theme} value={favoriteCount.toString()} />
-          <StatPill label="Tagged" theme={theme} value={taggedCount.toString()} />
-        </View>
-
-        <SearchBar onChangeText={setSearchText} theme={theme} value={searchText} />
-
-        <View style={styles.filterRow}>
-          <FilterChip active={activeFilter === 'all'} label="All" onPress={() => setActiveFilter('all')} theme={theme} />
-          <FilterChip
-            active={activeFilter === 'favorites'}
-            label="Favorites"
-            onPress={() => setActiveFilter('favorites')}
-            theme={theme}
-          />
-          <FilterChip
-            active={activeFilter === 'camera'}
-            label="Camera"
-            onPress={() => setActiveFilter('camera')}
-            theme={theme}
-          />
-          <FilterChip
-            active={activeFilter === 'library'}
-            label="Library"
-            onPress={() => setActiveFilter('library')}
-            theme={theme}
-          />
-        </View>
-
-        {visibleTags.length ? (
-          <View style={styles.tagsSection}>
-            <Text style={[styles.tagsLabel, { color: theme.colors.muted }]}>Moods and tags</Text>
-            <View style={styles.tagsRow}>
-              {visibleTags.map((tag) => (
-                <FilterChip
-                  key={tag}
-                  active={activeTag?.toLowerCase() === tag.toLowerCase()}
-                  label={tag}
-                  onPress={() =>
-                    setActiveTag((current) => (current?.toLowerCase() === tag.toLowerCase() ? undefined : tag))
-                  }
-                  theme={theme}
-                />
-              ))}
-              {hasRefinements ? (
-                <FilterChip active={false} label="Clear filters" onPress={clearRefinements} theme={theme} />
-              ) : null}
+          <View style={styles.headerRow}>
+            <View style={styles.brandRow}>
+              <MemoLensLogo size={25} />
+              <Text style={styles.brandText}>MemoLens</Text>
+            </View>
+            <View style={styles.headerActions}>
+              <Pressable accessibilityRole="button" onPress={() => navigation.navigate('SearchMemories')} style={styles.headerIcon}>
+                <MemoIcon color={memoColors.muted} name="bell" size={20} strokeWidth={2.25} />
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Settings')}>
+                {user.photoUrl ? (
+                  <Image source={{ uri: user.photoUrl }} style={styles.avatarImage} />
+                ) : (
+                  <View style={styles.avatarFallback}>
+                    <Text style={styles.avatarInitial}>{firstName.charAt(0).toUpperCase() || 'A'}</Text>
+                  </View>
+                )}
+              </Pressable>
             </View>
           </View>
-        ) : null}
 
-        <StatusBanner message={status?.message} theme={theme} tone={status?.tone} />
+          <View style={styles.greetingBlock}>
+            <Text style={styles.greeting}>Good evening, {firstName}</Text>
+            <Text style={styles.subtitle}>What feeling are we saving today?</Text>
+          </View>
 
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            {hasRefinements ? 'Matching memories' : 'Recent memories'}
-          </Text>
-          <Text style={[styles.sectionMeta, { color: theme.colors.muted }]}>
-            {filteredItems.length} {filteredItems.length === 1 ? 'memory' : 'memories'}
-          </Text>
-        </View>
+          <View style={styles.statsRow}>
+            <Stat label="Memories" value={String(items.length)} />
+            <View style={styles.statDivider} />
+            <Stat label="Favorites" value={String(items.filter((item) => item.isFavorite).length)} />
+            <View style={styles.statDivider} />
+            <Stat label="Tags" value={String(tagCount)} />
+          </View>
 
-        <GalleryGrid
-          ListEmptyComponent={
-            <EmptyState
-              actionLabel={hasRefinements ? 'Clear filters' : 'Create first memory'}
-              body={
-                hasRefinements
-                  ? 'No memories match that mix of search, filters, moods, or tags yet.'
-                  : 'Choose from your library or open the camera, then add a caption, mood, and tags.'
-              }
-              onAction={hasRefinements ? clearRefinements : openPicker}
-              theme={theme}
-              title={hasRefinements ? 'No matches' : 'Your first memory is waiting'}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => searchRef.current?.focus()}
+            style={({ pressed }) => [styles.searchShell, pressed && styles.pressed]}
+          >
+            <MemoIcon color={memoColors.quiet} name="search" size={21} strokeWidth={2.25} />
+            <TextInput
+              ref={searchRef}
+              autoCapitalize="none"
+              onChangeText={setSearchText}
+              placeholder="Search memories, moods, tags..."
+              placeholderTextColor={memoColors.quiet}
+              style={styles.searchInput}
+              value={searchText}
             />
-          }
-          items={filteredItems}
-          onItemPress={(item) => navigation.navigate('Detail', { itemId: item.id })}
-          onItemShare={shareItem}
-          theme={theme}
-        />
-      </View>
-    </SafeAreaView>
+          </Pressable>
+
+          <GlassCard style={styles.createCard}>
+            <LinearGradient colors={['rgba(168,85,247,0.17)', 'rgba(251,113,133,0.08)', 'rgba(251,146,60,0.02)']} style={StyleSheet.absoluteFill} />
+            <View style={styles.createText}>
+              <Text style={styles.createTitle}>Create a Memory</Text>
+              <Text style={styles.createBody}>Photo, voice, mood, and story.</Text>
+            </View>
+            <View style={styles.createActions}>
+              <CreateAction color={memoColors.cyan} icon="camera" label="Camera" onPress={openCamera} />
+              <CreateAction color={memoColors.accent} icon="image" label="Photos" onPress={openPicker} />
+              <CreateAction color={memoColors.orange} icon="mic" label="Voice" onPress={openVoice} />
+            </View>
+          </GlassCard>
+
+          <StatusBanner message={status?.message} theme={bannerTheme} tone={status?.tone} />
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent Memories</Text>
+            <Pressable accessibilityRole="button" onPress={() => navigation.navigate('SearchMemories')}>
+              <Text style={styles.viewAll}>View all</Text>
+            </Pressable>
+          </View>
+
+          {memories.length > 0 ? (
+            <View style={styles.masonry}>
+              <View style={styles.column}>
+                {columns[0].map((memory) => (
+                  <MemoryCard key={memory.id} memory={memory} onPress={() => openMemory(memory)} />
+                ))}
+              </View>
+              <View style={styles.column}>
+                {columns[1].map((memory) => (
+                  <MemoryCard key={memory.id} memory={memory} onPress={() => openMemory(memory)} />
+                ))}
+              </View>
+            </View>
+          ) : (
+            <GlassCard style={styles.emptyState}>
+              <MemoLensLogo size={64} />
+              <Text style={styles.emptyTitle}>Your first memory is waiting</Text>
+              <Text style={styles.emptyBody}>Choose from your library or open the camera, then add a caption, mood, and tags.</Text>
+            </GlassCard>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+
+      <MemoBottomNav
+        active="home"
+        bottomInset={insets.bottom}
+        onCreate={() => navigation.navigate('AddItem', undefined)}
+        onHome={() => undefined}
+        onMemories={() => navigation.navigate('SearchMemories')}
+        onProfile={() => navigation.navigate('Settings')}
+        onSearch={() => navigation.navigate('SearchMemories')}
+      />
+    </ScreenBackground>
   );
 }
 
-type StatPillProps = {
-  label: string;
-  theme: AppTheme;
-  value: string;
-};
-
-type FilterChipProps = {
-  active: boolean;
-  label: string;
-  onPress: () => void;
-  theme: AppTheme;
-};
-
-function StatPill({ label, theme, value }: StatPillProps) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <View
-      style={[
-        styles.statPill,
-        {
-          backgroundColor: theme.colors.surfaceRaised,
-          borderColor: theme.colors.border,
-          borderRadius: theme.radius.md,
-          boxShadow: `0 10px 24px ${theme.colors.shadow}`,
-        },
-      ]}
-    >
-      <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.colors.muted }]}>{label}</Text>
+    <View style={styles.stat}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 }
 
-function FilterChip({ active, label, onPress, theme }: FilterChipProps) {
+function CreateAction({
+  color,
+  icon,
+  label,
+  onPress,
+}: {
+  color: string;
+  icon: 'camera' | 'image' | 'mic';
+  label: string;
+  onPress: () => void;
+}) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.filterChip,
-        {
-          backgroundColor: active ? theme.colors.primary : theme.colors.surfaceRaised,
-          borderColor: active ? theme.colors.primary : theme.colors.border,
-          borderRadius: theme.radius.md,
-          opacity: pressed ? 0.75 : 1,
-        },
-      ]}
-    >
-      <Text style={[styles.filterChipText, { color: active ? theme.colors.primaryText : theme.colors.text }]}>
-        {label}
-      </Text>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.createAction, pressed && styles.pressed]}>
+      <View style={[styles.createIcon, { backgroundColor: `${color}18`, borderColor: `${color}38` }]}>
+        <MemoIcon color={color} name={icon} size={22} strokeWidth={2.35} />
+      </View>
+      <Text style={styles.createLabel}>{label}</Text>
     </Pressable>
   );
 }
 
+function createSavedMemory(item: GalleryItem, index: number): HomeMemory {
+  return {
+    date: formatMemoryDate(item.createdAt),
+    hasVoice: Boolean(item.voiceUri),
+    height: [170, 150, 158, 176, 150, 164][index % 6],
+    id: item.id,
+    image: item.imageUri ? { uri: item.imageUri } : fallbackMemoryImage,
+    item,
+    mood: item.mood ?? (item.isFavorite ? 'Favorite' : item.source === 'camera' ? 'Captured' : 'Saved'),
+    source: item.source,
+    tags: item.tags,
+    title: getMemoryTitle(item.caption),
+  };
+}
+
+function splitColumns(memories: HomeMemory[]): [HomeMemory[], HomeMemory[]] {
+  return memories.reduce<[HomeMemory[], HomeMemory[]]>(
+    (columns, memory, index) => {
+      columns[index % 2].push(memory);
+      return columns;
+    },
+    [[], []],
+  );
+}
+
+function getFirstName(name: string): string {
+  return name.trim().split(/\s+/)[0] || 'Aby';
+}
+
 const styles = StyleSheet.create({
-  actionBody: {
-    fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 18,
-  },
-  actionCopy: {
-    flex: 1,
-    gap: 4,
-    minWidth: 220,
-  },
-  actionPanel: {
+  avatarFallback: {
     alignItems: 'center',
+    backgroundColor: '#171827',
+    borderColor: memoColors.borderSoft,
+    borderRadius: 19,
     borderWidth: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 14,
-    justifyContent: 'space-between',
-    padding: 14,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
   },
-  actionRow: {
+  avatarImage: {
+    borderColor: memoColors.borderSoft,
+    borderRadius: 19,
+    borderWidth: 1,
+    height: 38,
+    width: 38,
+  },
+  avatarInitial: {
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 15,
+    letterSpacing: 0,
+  },
+  brandRow: {
+    alignItems: 'center',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 10,
   },
-  actionTitle: {
-    fontSize: 17,
-    fontWeight: '900',
+  brandText: {
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 20,
     letterSpacing: 0,
+    lineHeight: 26,
   },
-  filterChip: {
-    borderWidth: 1,
-    minHeight: 40,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-  },
-  filterChipText: {
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0,
-  },
-  filterRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  page: {
-    alignSelf: 'center',
+  column: {
     flex: 1,
     gap: 14,
-    maxWidth: 1180,
-    paddingHorizontal: 18,
-    paddingTop: 10,
-    width: '100%',
+  },
+  content: {
+    gap: 18,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+  },
+  createAction: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 8,
+    minHeight: 76,
+  },
+  createActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 18,
+  },
+  createBody: {
+    color: memoColors.muted,
+    fontFamily: memoFont.regular,
+    fontSize: 13,
+    letterSpacing: 0,
+    lineHeight: 19,
+  },
+  createCard: {
+    padding: 20,
+  },
+  createIcon: {
+    alignItems: 'center',
+    borderRadius: 24,
+    borderWidth: 1,
+    height: 48,
+    justifyContent: 'center',
+    width: 48,
+  },
+  createLabel: {
+    color: memoColors.text,
+    fontFamily: memoFont.medium,
+    fontSize: 11,
+    letterSpacing: 0,
+    lineHeight: 15,
+  },
+  createText: {
+    gap: 4,
+  },
+  createTitle: {
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 18,
+    letterSpacing: 0,
+    lineHeight: 24,
+  },
+  emptyBody: {
+    color: memoColors.muted,
+    fontFamily: memoFont.regular,
+    fontSize: 14,
+    letterSpacing: 0,
+    lineHeight: 21,
+    textAlign: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 260,
+    padding: 26,
+  },
+  emptyTitle: {
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 21,
+    letterSpacing: 0,
+    lineHeight: 27,
+    textAlign: 'center',
+  },
+  greeting: {
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 27,
+    letterSpacing: 0,
+    lineHeight: 34,
+  },
+  greetingBlock: {
+    gap: 5,
+    paddingTop: 9,
+  },
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 13,
+  },
+  headerIcon: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  headerRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  masonry: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  pressed: {
+    opacity: 0.76,
+    transform: [{ scale: 0.985 }],
   },
   safeArea: {
     flex: 1,
+  },
+  scroller: {
+    flex: 1,
+  },
+  searchInput: {
+    color: memoColors.text,
+    flex: 1,
+    fontFamily: memoFont.regular,
+    fontSize: 14,
+    letterSpacing: 0,
+    minHeight: 52,
+    padding: 0,
+  },
+  searchShell: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(18, 20, 29, 0.82)',
+    borderColor: memoColors.border,
+    borderRadius: 17,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    minHeight: 52,
+    paddingHorizontal: 16,
   },
   sectionHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 28,
-  },
-  sectionMeta: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0,
+    marginTop: 5,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '900',
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 22,
     letterSpacing: 0,
+    lineHeight: 28,
+  },
+  stat: {
+    flex: 1,
+    gap: 3,
+  },
+  statDivider: {
+    alignSelf: 'stretch',
+    backgroundColor: memoColors.border,
+    width: 1,
   },
   statLabel: {
-    fontSize: 12,
-    fontWeight: '800',
+    color: memoColors.quiet,
+    fontFamily: memoFont.medium,
+    fontSize: 10,
     letterSpacing: 0,
+    lineHeight: 14,
     textTransform: 'uppercase',
-  },
-  statPill: {
-    borderWidth: 1,
-    flex: 1,
-    gap: 2,
-    minWidth: 92,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
   },
   statsRow: {
+    alignItems: 'center',
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    minHeight: 52,
+    paddingVertical: 4,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: '900',
+    color: memoColors.text,
+    fontFamily: memoFont.semiBold,
+    fontSize: 20,
     letterSpacing: 0,
+    lineHeight: 26,
   },
   subtitle: {
-    fontSize: 14,
-    lineHeight: 20,
+    color: memoColors.muted,
+    fontFamily: memoFont.regular,
+    fontSize: 16,
+    letterSpacing: 0,
+    lineHeight: 23,
   },
-  tagsLabel: {
+  viewAll: {
+    color: gradients.brand[0],
+    fontFamily: memoFont.medium,
     fontSize: 12,
-    fontWeight: '800',
     letterSpacing: 0,
-    textTransform: 'uppercase',
-  },
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  tagsSection: {
-    gap: 8,
-  },
-  title: {
-    fontSize: 38,
-    fontWeight: '900',
-    letterSpacing: 0,
-    lineHeight: 43,
-  },
-  titleRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-    justifyContent: 'space-between',
-  },
-  titleText: {
-    flex: 1,
-    minWidth: 240,
+    lineHeight: 16,
   },
 });

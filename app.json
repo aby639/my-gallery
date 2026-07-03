@@ -2,11 +2,11 @@
   "expo": {
     "name": "MemoLens",
     "slug": "my-gallery-ablespace",
-    "version": "1.2.0",
+    "version": "1.2.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "mygallery",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -19,7 +19,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "MemoLens uses the camera so you can capture photos for private memories.",
         "NSPhotoLibraryUsageDescription": "MemoLens uses your photo library so you can choose photos for private memories.",
-        "NSMicrophoneUsageDescription": "MemoLens uses the microphone so you can dictate memory captions.",
+        "NSMicrophoneUsageDescription": "MemoLens uses the microphone so you can dictate captions and record private voice memories.",
         "NSSpeechRecognitionUsageDescription": "MemoLens uses speech recognition to create captions from your voice."
       }
     },
@@ -36,7 +36,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_MEDIA_IMAGES"
       ],
-      "versionCode": 9,
+      "versionCode": 15,
       "runtimeVersion": "1.0.0"
     },
     "web": {
@@ -56,13 +56,15 @@
       [
         "expo-speech-recognition",
         {
-          "microphonePermission": "MemoLens uses the microphone so you can dictate captions.",
+          "microphonePermission": "MemoLens uses the microphone so you can dictate captions and record private voice memories.",
           "speechRecognitionPermission": "MemoLens uses speech recognition to create captions from your voice.",
           "androidSpeechServicePackages": [
             "com.google.android.googlequicksearchbox"
           ]
         }
-      ]
+      ],
+      "expo-font",
+      "expo-audio"
     ],
     "extra": {
       "eas": {

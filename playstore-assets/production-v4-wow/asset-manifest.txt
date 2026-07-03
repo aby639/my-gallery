@@ -1,0 +1,16 @@
+app-icon-512-with-alpha.png | 512x512 | RGBA | 47.7 KB
+app-icon-512.png | 512x512 | RGB | 43.3 KB
+feature-graphic-1024x500.png | 1024x500 | RGB | 201.7 KB
+feature-graphic-alt-1024x500.png | 1024x500 | RGB | 507.0 KB
+phone-screenshots\01-home.png | 1440x2560 | RGB | 679.5 KB
+phone-screenshots\02-create-memory.png | 1440x2560 | RGB | 646.6 KB
+phone-screenshots\03-voice-memory.png | 1440x2560 | RGB | 607.7 KB
+phone-screenshots\04-search.png | 1440x2560 | RGB | 874.2 KB
+tablet-10-inch-screenshots\01-overview.png | 2560x1440 | RGB | 680.9 KB
+tablet-10-inch-screenshots\02-create.png | 2560x1440 | RGB | 695.8 KB
+tablet-10-inch-screenshots\03-voice.png | 2560x1440 | RGB | 662.8 KB
+tablet-10-inch-screenshots\04-search.png | 2560x1440 | RGB | 798.1 KB
+tablet-7-inch-screenshots\01-overview.png | 2560x1440 | RGB | 680.9 KB
+tablet-7-inch-screenshots\02-create.png | 2560x1440 | RGB | 695.8 KB
+tablet-7-inch-screenshots\03-voice.png | 2560x1440 | RGB | 662.8 KB
+tablet-7-inch-screenshots\04-search.png | 2560x1440 | RGB | 798.1 KB

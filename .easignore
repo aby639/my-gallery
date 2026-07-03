@@ -20,6 +20,9 @@ android/app/src/main/assets/adi-registration.properties
 # Logs and local screenshots
 *.log
 agent-browser-*.png
+artifacts/
+.gradle-local/
+.gradle-thread-dump.txt
 
 # VCS and editor noise
 .git/

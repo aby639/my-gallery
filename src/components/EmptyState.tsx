@@ -18,7 +18,7 @@ export function EmptyState({ title, body, actionLabel, onAction, theme }: EmptyS
       style={[
         styles.container,
         {
-          backgroundColor: theme.colors.surfaceRaised,
+          backgroundColor: theme.colors.surfaceGlass,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
           boxShadow: `0 18px 42px ${theme.colors.shadow}`,

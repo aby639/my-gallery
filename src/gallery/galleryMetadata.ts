@@ -29,7 +29,19 @@ export function formatTagInput(tags?: string[]): string {
 }
 
 export function buildSearchText(item: GalleryItem): string {
-  return [item.caption, item.mood, item.source, ...(item.tags ?? [])].filter(Boolean).join(' ').toLowerCase();
+  const createdDate = new Date(item.createdAt);
+  const dateText = Number.isNaN(createdDate.getTime())
+    ? item.createdAt
+    : new Intl.DateTimeFormat(undefined, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(createdDate);
+
+  return [item.caption, item.mood, item.source, item.createdAt, dateText, ...(item.tags ?? [])]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
 }
 
 function normalizeTag(rawTag: string): string {

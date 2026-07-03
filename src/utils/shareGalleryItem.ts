@@ -1,4 +1,3 @@
-import { getContentUriAsync } from 'expo-file-system/legacy';
 import * as ExpoSharing from 'expo-sharing';
 import { Platform, Share } from 'react-native';
 
@@ -14,9 +13,10 @@ type NavigatorWithShare = Navigator & {
   clipboard?: Clipboard;
 };
 
-export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> {
+export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult | undefined> {
   const caption = item.caption || 'MemoLens memory';
   const shareTitle = item.mood ? `${item.mood} memory` : 'MemoLens';
+  const shareMessage = buildShareMessage(item);
 
   try {
     if (Platform.OS === 'web') {
@@ -24,51 +24,121 @@ export async function shareGalleryItem(item: GalleryItem): Promise<ShareResult> 
 
       if (navigatorWithShare?.share) {
         await navigatorWithShare.share({
-          text: caption,
+          text: shareMessage,
           title: shareTitle,
-          url: item.imageUri,
         });
-        return { message: 'Shared from the browser.', tone: 'success' };
+        return undefined;
       }
 
       if (navigatorWithShare?.clipboard?.writeText) {
-        await navigatorWithShare.clipboard.writeText(`${caption}\n${item.imageUri}`);
-        return { message: 'Sharing is not available here, so the caption and image link were copied.', tone: 'info' };
+        await navigatorWithShare.clipboard.writeText(shareMessage);
+        return { message: 'Sharing is not available in this preview. Caption copied instead.', tone: 'info' };
       }
 
-      return { message: 'Sharing is not supported in this browser.', tone: 'error' };
+      return { message: 'Sharing is not available in this preview.', tone: 'info' };
     }
 
     if (await ExpoSharing.isAvailableAsync()) {
-      await ExpoSharing.shareAsync(await getNativeShareUri(item.imageUri), {
-        dialogTitle: caption,
-        mimeType: getImageMimeType(item.imageUri),
-        UTI: getImageUti(item.imageUri),
-      });
-      return { message: 'Image share sheet opened with the saved file.', tone: 'success' };
+      const targets = getNativeShareTargets(item, caption);
+
+      for (const target of targets) {
+        try {
+          await ExpoSharing.shareAsync(target.uri, {
+            dialogTitle: target.dialogTitle,
+            mimeType: target.mimeType,
+            UTI: target.UTI,
+          });
+          return undefined;
+        } catch {
+          // Try the next attached media file, then fall back to text sharing below.
+        }
+      }
     }
 
     await Share.share({
-      message: `${caption}\n\nMade with MemoLens`,
+      message: shareMessage,
       title: shareTitle,
     });
 
-    return { message: 'Caption share sheet opened. Image sharing is not available on this device.', tone: 'info' };
+    return undefined;
   } catch {
-    return { message: 'Sharing is not available on this device.', tone: 'error' };
+    return {
+      message: Platform.OS === 'web' ? 'Sharing is not available in this preview.' : 'Share sheet is unavailable right now. Try again from the saved memory.',
+      tone: 'info',
+    };
   }
 }
 
-async function getNativeShareUri(uri: string): Promise<string> {
-  if (Platform.OS !== 'android' || !uri.startsWith('file://')) {
-    return uri;
+function buildShareMessage(item: GalleryItem): string {
+  const lines = [item.caption || 'MemoLens memory'];
+
+  if (item.mood) {
+    lines.push(`Mood: ${item.mood}`);
   }
 
-  try {
-    return await getContentUriAsync(uri);
-  } catch {
-    return uri;
+  if (item.tags?.length) {
+    lines.push(`Tags: ${item.tags.map((tag) => `#${tag.replace(/^#+/, '')}`).join(' ')}`);
   }
+
+  if (item.voiceUri) {
+    lines.push('Voice note attached in MemoLens.');
+  }
+
+  lines.push('Made with MemoLens');
+  return lines.join('\n\n');
+}
+
+type NativeShareTarget = {
+  dialogTitle: string;
+  mimeType: string;
+  uri: string;
+  UTI?: string;
+};
+
+function getNativeShareTargets(item: GalleryItem, caption: string): NativeShareTarget[] {
+  const targets: NativeShareTarget[] = [];
+  const imageTarget = getImageShareTarget(item.imageUri, caption);
+  const voiceTarget = item.voiceUri ? getVoiceShareTarget(item.voiceUri, caption) : undefined;
+
+  if (item.source === 'voice') {
+    if (voiceTarget) targets.push(voiceTarget);
+    if (imageTarget) targets.push(imageTarget);
+    return targets;
+  }
+
+  if (imageTarget) targets.push(imageTarget);
+  if (voiceTarget) targets.push(voiceTarget);
+  return targets;
+}
+
+function getImageShareTarget(uri: string, caption: string): NativeShareTarget | undefined {
+  if (!uri.startsWith('file://')) {
+    return undefined;
+  }
+
+  const mimeType = getImageMimeType(uri);
+
+  return {
+    dialogTitle: caption,
+    mimeType,
+    uri,
+    UTI: getImageUti(mimeType),
+  };
+}
+
+function getVoiceShareTarget(uri: string, caption: string): NativeShareTarget | undefined {
+  if (!uri.startsWith('file://')) {
+    return undefined;
+  }
+
+  const mimeType = getAudioMimeType(uri);
+
+  return {
+    dialogTitle: caption,
+    mimeType,
+    uri,
+    UTI: getAudioUti(mimeType),
+  };
 }
 
 function getImageMimeType(uri: string): string {
@@ -85,12 +155,44 @@ function getImageMimeType(uri: string): string {
   return 'image/jpeg';
 }
 
-function getImageUti(uri: string): string {
-  const mimeType = getImageMimeType(uri);
-
+function getImageUti(mimeType: string): string {
   if (mimeType === 'image/png') {
     return 'public.png';
   }
 
   return 'public.jpeg';
+}
+
+function getAudioMimeType(uri: string): string {
+  const normalizedUri = uri.toLowerCase();
+
+  if (normalizedUri.endsWith('.3gp')) {
+    return 'audio/3gpp';
+  }
+
+  if (normalizedUri.endsWith('.aac')) {
+    return 'audio/aac';
+  }
+
+  if (normalizedUri.endsWith('.webm')) {
+    return 'audio/webm';
+  }
+
+  if (normalizedUri.endsWith('.caf')) {
+    return 'audio/x-caf';
+  }
+
+  return 'audio/mp4';
+}
+
+function getAudioUti(mimeType: string): string {
+  if (mimeType === 'audio/aac') {
+    return 'public.aac-audio';
+  }
+
+  if (mimeType === 'audio/x-caf') {
+    return 'com.apple.coreaudio-format';
+  }
+
+  return 'public.audio';
 }

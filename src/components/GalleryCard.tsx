@@ -71,10 +71,10 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
         style={[
           styles.card,
           {
-            backgroundColor: theme.colors.surfaceRaised,
+            backgroundColor: theme.colors.surfaceAlt,
             borderColor: theme.colors.border,
             borderRadius: theme.radius.md,
-            boxShadow: `0 12px 26px ${theme.colors.shadow}`,
+            boxShadow: `0 16px 34px ${theme.colors.shadow}`,
           },
         ]}
       >
@@ -91,6 +91,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
               },
             ]}
           />
+          <View style={[styles.imageShade, { backgroundColor: theme.colors.overlay, borderRadius: theme.radius.md }]} />
           <View
             style={[
               styles.sourcePill,
@@ -110,13 +111,13 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
               style={[
                 styles.favoriteMark,
                 {
-                  backgroundColor: theme.colors.accentSoft,
+                  backgroundColor: theme.colors.primary,
                   borderColor: theme.colors.border,
                   borderRadius: theme.radius.sm,
                 },
               ]}
             >
-              <Text style={[styles.favoriteText, { color: theme.colors.accent }]}>Fav</Text>
+              <Text style={[styles.favoriteText, { color: theme.colors.primaryText }]}>Saved</Text>
             </View>
           ) : null}
         </View>
@@ -149,14 +150,14 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
               style={({ pressed }) => [
                 styles.shareButton,
                 {
-                  backgroundColor: theme.colors.surfaceAlt,
+                  backgroundColor: theme.colors.surface,
                   borderColor: theme.colors.border,
                   borderRadius: theme.radius.sm,
                   opacity: pressed ? 0.72 : 1,
                 },
               ]}
             >
-              <Text style={[styles.shareText, { color: theme.colors.text }]}>Share</Text>
+              <Text style={[styles.shareText, { color: theme.colors.text }]}>Send</Text>
             </Pressable>
           </View>
           <Text style={[styles.meta, { color: theme.colors.muted }]}>
@@ -206,7 +207,7 @@ export function GalleryCard({ index = 0, item, onPress, onShare, theme }: Galler
 const styles = StyleSheet.create({
   body: {
     gap: 8,
-    minHeight: 132,
+    minHeight: 122,
     padding: 12,
   },
   caption: {
@@ -241,12 +242,20 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
   image: {
-    aspectRatio: 1.06,
+    aspectRatio: 0.92,
     borderWidth: 1,
     width: '100%',
   },
+  imageShade: {
+    bottom: 8,
+    height: '34%',
+    left: 8,
+    opacity: 0.32,
+    position: 'absolute',
+    right: 8,
+  },
   imageWrap: {
-    padding: 8,
+    padding: 7,
   },
   meta: {
     fontSize: 12,

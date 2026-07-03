@@ -1,4 +1,4 @@
-export type GallerySource = 'camera' | 'library';
+export type GallerySource = 'camera' | 'library' | 'voice';
 export type GalleryFilter = 'all' | 'favorites' | 'camera' | 'library';
 
 export type GalleryItem = {
@@ -10,6 +10,8 @@ export type GalleryItem = {
   mood?: string;
   tags?: string[];
   isFavorite?: boolean;
+  voiceDurationMillis?: number;
+  voiceUri?: string;
 };
 
 export type GalleryUser = {
@@ -22,13 +24,17 @@ export type GalleryUser = {
 export type RootStackParamList = {
   Login: undefined;
   Gallery: undefined;
-  AddItem: {
-    imageUri: string;
-    source: GallerySource;
-  };
+  AddItem:
+    | {
+        imageUri?: string;
+        itemId?: string;
+        source?: GallerySource;
+      }
+    | undefined;
   Detail: {
     itemId: string;
   };
+  SearchMemories: undefined;
   Settings: undefined;
   PrivacyPolicy: undefined;
 };

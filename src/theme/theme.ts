@@ -4,13 +4,16 @@ import { ThemePreference } from '../storage/galleryStorage';
 
 export type AppColors = {
   background: string;
+  backgroundAlt: string;
   surface: string;
   surfaceAlt: string;
   surfaceRaised: string;
+  surfaceGlass: string;
   text: string;
   textSoft: string;
   muted: string;
   border: string;
+  borderSoft: string;
   primary: string;
   primaryText: string;
   primarySoft: string;
@@ -27,6 +30,7 @@ export type AppColors = {
   success: string;
   warning: string;
   shadow: string;
+  overlay: string;
 };
 
 export type AppTheme = {
@@ -61,57 +65,65 @@ const shared = {
 };
 
 const lightColors: AppColors = {
-  background: '#f8f7fb',
+  background: '#faf8fb',
+  backgroundAlt: '#f1edf3',
   surface: '#ffffff',
-  surfaceAlt: '#f0edf7',
+  surfaceAlt: '#f3eef4',
   surfaceRaised: '#ffffff',
-  text: '#17131f',
-  textSoft: '#393141',
-  muted: '#756f7d',
-  border: '#e5ddea',
-  primary: '#15111d',
+  surfaceGlass: 'rgba(255, 255, 255, 0.78)',
+  text: '#171018',
+  textSoft: '#443846',
+  muted: '#7a707d',
+  border: '#e7dce7',
+  borderSoft: '#f0e8ef',
+  primary: '#a855f7',
   primaryText: '#ffffff',
-  primarySoft: '#eee7f8',
-  secondary: '#8a3ffc',
+  primarySoft: '#f1e4ff',
+  secondary: '#fb7185',
   secondaryText: '#ffffff',
-  accent: '#ef476f',
-  accentSoft: '#ffe6ee',
-  warm: '#ff8a3d',
-  warmSoft: '#fff0e4',
+  accent: '#ec6380',
+  accentSoft: '#ffe9ee',
+  warm: '#f59b62',
+  warmSoft: '#fff0e7',
   cyan: '#21bfd0',
   cyanSoft: '#e4fbff',
   danger: '#ff6b6b',
   dangerText: '#240606',
   success: '#1b9a68',
   warning: '#c77915',
-  shadow: 'rgba(38, 23, 54, 0.14)',
+  shadow: 'rgba(35, 22, 38, 0.14)',
+  overlay: 'rgba(17, 10, 18, 0.55)',
 };
 
 const darkColors: AppColors = {
   background: '#090a10',
-  surface: '#12141d',
-  surfaceAlt: '#1a1d29',
-  surfaceRaised: '#151722',
-  text: '#fbf8ff',
-  textSoft: '#e2ddeb',
-  muted: '#aaa4b6',
-  border: '#2a2e3c',
-  primary: '#f7f3ff',
-  primaryText: '#11101a',
-  primarySoft: '#241b32',
-  secondary: '#a855f7',
+  backgroundAlt: '#111019',
+  surface: '#14121a',
+  surfaceAlt: '#1d1822',
+  surfaceRaised: '#17141d',
+  surfaceGlass: 'rgba(23, 20, 29, 0.76)',
+  text: '#fff7fb',
+  textSoft: '#e7dce8',
+  muted: '#b8acba',
+  border: '#322a38',
+  borderSoft: '#25202a',
+  primary: '#ddb7ff',
+  primaryText: '#211326',
+  primarySoft: '#2b1837',
+  secondary: '#ffb2b9',
   secondaryText: '#ffffff',
-  accent: '#ff6f91',
-  accentSoft: '#351725',
-  warm: '#ff9954',
-  warmSoft: '#352116',
+  accent: '#ff7b92',
+  accentSoft: '#351923',
+  warm: '#ffab6e',
+  warmSoft: '#342216',
   cyan: '#22d3ee',
-  cyanSoft: '#0d2b32',
+  cyanSoft: '#102b30',
   danger: '#ff7373',
   dangerText: '#220807',
   success: '#66d9a6',
   warning: '#f8c15a',
   shadow: 'rgba(0, 0, 0, 0.48)',
+  overlay: 'rgba(4, 4, 8, 0.62)',
 };
 
 export const themes: Record<ThemePreference, AppTheme> = {

@@ -25,7 +25,7 @@ export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
 
     const startListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('start', () => {
       setIsListening(true);
-      setMessage('Listening...');
+      setMessage(undefined);
     });
     const endListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('end', () => {
       setIsListening(false);
@@ -39,7 +39,7 @@ export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
 
       if (transcript) {
         onResult(transcript);
-        setMessage(event.isFinal ? 'Caption captured.' : 'Listening...');
+        setMessage(undefined);
       }
     });
     const errorListener = speechRecognition.ExpoSpeechRecognitionModule.addListener('error', (event) => {
@@ -57,6 +57,7 @@ export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
 
   const startListening = useCallback(async () => {
     const speechRecognition = speechRecognitionRef.current;
+    setMessage(undefined);
 
     if (!speechRecognition) {
       setMessage(voiceNativeModuleUnavailableMessage);
@@ -93,6 +94,7 @@ export function useVoiceCaption({ onResult }: UseVoiceCaptionOptions) {
   const stopListening = useCallback(() => {
     speechRecognitionRef.current?.ExpoSpeechRecognitionModule.stop();
     setIsListening(false);
+    setMessage(undefined);
   }, []);
 
   return {

@@ -1,7 +1,13 @@
 import { Directory, File, Paths } from 'expo-file-system';
+import * as LegacyFileSystem from 'expo-file-system/legacy';
 import { ImagePickerAsset } from 'expo-image-picker';
+import { Platform } from 'react-native';
 
 export function getPersistableImageUri(asset: ImagePickerAsset): string {
+  if (Platform.OS !== 'web' && asset.uri) {
+    return asset.uri;
+  }
+
   if (asset.base64) {
     const mimeType = asset.mimeType ?? 'image/jpeg';
     return `data:${mimeType};base64,${asset.base64}`;
@@ -11,6 +17,29 @@ export function getPersistableImageUri(asset: ImagePickerAsset): string {
 }
 
 export async function persistImageForGallery(uri: string, id: string): Promise<string> {
+  const dataUriMatch = uri.match(/^data:(image\/(?:jpe?g|png|webp));base64,(.+)$/);
+
+  if (dataUriMatch) {
+    try {
+      const galleryDirectory = getGalleryDirectory();
+      galleryDirectory.create({ idempotent: true, intermediates: true });
+
+      const destinationFile = new File(galleryDirectory, `${id}${getImageExtensionFromMime(dataUriMatch[1])}`);
+
+      if (destinationFile.exists) {
+        destinationFile.delete();
+      }
+
+      await LegacyFileSystem.writeAsStringAsync(destinationFile.uri, dataUriMatch[2], {
+        encoding: LegacyFileSystem.EncodingType.Base64,
+      });
+
+      return destinationFile.uri;
+    } catch {
+      return uri;
+    }
+  }
+
   if (!uri.startsWith('file://')) {
     return uri;
   }
@@ -86,4 +115,16 @@ function getImageExtension(uri: string): string {
   }
 
   return `.${extensionMatch[1] === 'jpeg' ? 'jpg' : extensionMatch[1]}`;
+}
+
+function getImageExtensionFromMime(mimeType: string): string {
+  if (mimeType === 'image/png') {
+    return '.png';
+  }
+
+  if (mimeType === 'image/webp') {
+    return '.webp';
+  }
+
+  return '.jpg';
 }

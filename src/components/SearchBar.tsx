@@ -17,11 +17,12 @@ export function SearchBar({ value, onChangeText, theme }: SearchBarProps) {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
+          boxShadow: `0 10px 26px ${theme.colors.shadow}`,
         },
       ]}
     >
       <View style={[styles.iconPill, { backgroundColor: theme.colors.primarySoft, borderRadius: theme.radius.sm }]}>
-        <Text style={[styles.icon, { color: theme.colors.text }]}>S</Text>
+        <Text style={[styles.icon, { color: theme.colors.accent }]}>Find</Text>
       </View>
       <TextInput
         accessibilityLabel="Search memories"
@@ -71,14 +72,15 @@ const styles = StyleSheet.create({
     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.04)',
   },
   icon: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '900',
+    letterSpacing: 0,
   },
   iconPill: {
     alignItems: 'center',
     height: 32,
     justifyContent: 'center',
-    width: 32,
+    paddingHorizontal: 8,
   },
   input: {
     flex: 1,

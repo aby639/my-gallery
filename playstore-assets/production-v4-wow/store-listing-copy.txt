@@ -1,0 +1,21 @@
+App name recommendation: MemoLens
+
+Short description (under 80 chars):
+Save photos, moods, captions, tags, and private voice notes.
+
+Full description:
+MemoLens is a private memory space for saving the story behind your photos.
+
+Add a photo, write or dictate a caption, choose a mood, add tags, and keep a private voice note with the moment. Your memories are easy to search later by caption, mood, tag, or favorite state, so the moments that matter are not buried in your camera roll.
+
+MemoLens is built for personal memories, daily reflections, travel notes, family moments, study memories, work sessions, and anything you want to remember with more feeling than a photo alone can hold.
+
+Key features:
+- Save photos with captions, moods, and tags
+- Dictate captions with speech-to-text
+- Add private voice notes to memories
+- Search by caption, mood, tag, and favorites
+- Share selected memories when you choose
+- Keep saved memories on your device in this version
+
+Save the photo. Keep the feeling.

@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'r
 import { ThemePreference } from '../storage/galleryStorage';
 import { AppTheme } from '../theme/theme';
 import { GalleryUser } from '../types/gallery';
+import { AppLogo } from './AppLogo';
 
 type ProfileHeaderProps = {
   user: GalleryUser;
@@ -23,25 +24,28 @@ export function ProfileHeader({ user, theme, themePreference, onOpenSettings, on
       style={[
         styles.container,
         {
-          backgroundColor: theme.colors.surfaceRaised,
+          backgroundColor: theme.colors.surfaceGlass,
           borderColor: theme.colors.border,
           borderRadius: theme.radius.md,
-          boxShadow: `0 18px 40px ${theme.colors.shadow}`,
         },
       ]}
     >
-      <View style={styles.topRow}>
-        <View style={[styles.profile, isCompact ? styles.profileCompact : undefined]}>
+      <View style={styles.brandRow}>
+        <View style={styles.brandLockup}>
+          <AppLogo size={36} theme={theme} />
+          <View style={styles.brandCopy}>
+            <Text style={[styles.brand, { color: theme.colors.text }]}>MemoLens</Text>
+            <Text numberOfLines={1} style={[styles.eyebrow, { color: theme.colors.muted }]}>
+              Good evening, {firstName}
+            </Text>
+          </View>
+        </View>
+
+        <View style={[styles.profileSide, isCompact ? styles.profileSideCompact : undefined]}>
           {user.photoUrl ? (
             <Image
               source={{ uri: user.photoUrl }}
-              style={[
-                styles.avatar,
-                {
-                  borderColor: theme.colors.border,
-                  borderRadius: theme.radius.md,
-                },
-              ]}
+              style={[styles.avatar, { borderColor: theme.colors.border, borderRadius: theme.radius.md }]}
             />
           ) : (
             <View
@@ -56,32 +60,16 @@ export function ProfileHeader({ user, theme, themePreference, onOpenSettings, on
               <Text style={[styles.avatarInitial, { color: theme.colors.primaryText }]}>{initial}</Text>
             </View>
           )}
-          <View style={styles.profileText}>
-            <Text style={[styles.eyebrow, { color: theme.colors.accent }]}>Good to see you, {firstName}</Text>
-            <Text numberOfLines={1} style={[styles.name, { color: theme.colors.text }]}>
-              MemoLens
-            </Text>
-            {user.email ? (
-              <Text numberOfLines={1} style={[styles.email, { color: theme.colors.muted }]}>
-                {user.email}
-              </Text>
-            ) : null}
+          <View style={styles.actions}>
+            <HeaderAction
+              label={themePreference === 'dark' ? 'Light' : 'Dark'}
+              onPress={onToggleTheme}
+              theme={theme}
+            />
+            <HeaderAction label="Settings" onPress={onOpenSettings} theme={theme} />
           </View>
         </View>
-
-        <View style={[styles.actions, isCompact ? styles.actionsCompact : undefined]}>
-          <HeaderAction
-            label={themePreference === 'dark' ? 'Light' : 'Dark'}
-            onPress={onToggleTheme}
-            theme={theme}
-          />
-          <HeaderAction label="Settings" onPress={onOpenSettings} theme={theme} />
-        </View>
       </View>
-
-      <Text style={[styles.welcomeCopy, { color: theme.colors.textSoft }]}>
-        Keep the photo, mood, caption, and tags together so the useful memories stay easy to find.
-      </Text>
     </View>
   );
 }
@@ -115,8 +103,8 @@ function HeaderAction({ label, onPress, theme }: HeaderActionProps) {
 const styles = StyleSheet.create({
   action: {
     borderWidth: 1,
-    minHeight: 42,
-    paddingHorizontal: 14,
+    minHeight: 40,
+    paddingHorizontal: 13,
     paddingVertical: 10,
   },
   actionText: {
@@ -126,77 +114,62 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 8,
-    justifyContent: 'flex-end',
-  },
-  actionsCompact: {
-    justifyContent: 'flex-start',
-    width: '100%',
   },
   avatar: {
     borderWidth: 1,
-    height: 60,
-    width: 60,
+    height: 40,
+    width: 40,
   },
   avatarFallback: {
     alignItems: 'center',
-    height: 60,
+    height: 40,
     justifyContent: 'center',
-    width: 60,
+    width: 40,
   },
   avatarInitial: {
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: '900',
   },
-  container: {
-    borderWidth: 1,
-    gap: 14,
-    padding: 18,
-  },
-  email: {
-    fontSize: 13,
-    fontWeight: '600',
-    letterSpacing: 0,
-  },
-  eyebrow: {
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 0,
-    marginBottom: 2,
-    textTransform: 'uppercase',
-  },
-  name: {
-    fontSize: 23,
+  brand: {
+    fontSize: 22,
     fontWeight: '900',
     letterSpacing: 0,
   },
-  profile: {
+  brandCopy: {
+    gap: 1,
+    minWidth: 0,
+  },
+  brandLockup: {
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     minWidth: 0,
   },
-  profileCompact: {
-    flexBasis: '100%',
-  },
-  profileText: {
-    flex: 1,
-    gap: 2,
-    minWidth: 0,
-  },
-  topRow: {
+  brandRow: {
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 14,
+    gap: 12,
     justifyContent: 'space-between',
   },
-  welcomeCopy: {
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
-    maxWidth: 660,
+  container: {
+    borderWidth: 1,
+    padding: 10,
+  },
+  eyebrow: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0,
+  },
+  profileSide: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  profileSideCompact: {
+    justifyContent: 'space-between',
+    width: '100%',
   },
 });

@@ -9,13 +9,21 @@ dist/
 web-build/
 coverage/
 *.log
+.gradle-thread-dump.txt
 agent-browser-*.png
 *.keystore
 *.jks
 *.p12
 *.pem
 android/local.properties
+android/.kotlin/
 android/app/src/main/assets/adi-registration.properties
+artifacts/
+
+# Keep the final Play Store image pack, ignore draft exports and video experiments
+playstore-assets/*
+!playstore-assets/production-v4-wow/
+!playstore-assets/production-v4-wow/**
 
 # Environment files
 .env

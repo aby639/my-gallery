@@ -1,3 +1,10 @@
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  useFonts,
+} from '@expo-google-fonts/poppins';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
@@ -7,9 +14,7 @@ import { clearNativeGoogleSession } from './src/auth/nativeGoogleSignIn';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import {
   clearUser,
-  loadThemePreference,
   loadUser,
-  saveThemePreference,
   saveUser,
   ThemePreference,
 } from './src/storage/galleryStorage';
@@ -18,20 +23,35 @@ import { GalleryUser } from './src/types/gallery';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
-  const [themePreference, setThemePreference] = useState<ThemePreference>('dark');
+  const [fontLoadTimedOut, setFontLoadTimedOut] = useState(false);
+  const themePreference: ThemePreference = 'dark';
   const [user, setUser] = useState<GalleryUser | null>(null);
   const theme = getAppTheme(themePreference);
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+  });
 
   useEffect(() => {
     async function bootstrap() {
-      const [storedUser, storedTheme] = await Promise.all([loadUser(), loadThemePreference()]);
+      const storedUser = await loadUser();
       setUser(storedUser);
-      setThemePreference(storedTheme);
       setIsReady(true);
     }
 
     void bootstrap();
   }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      return undefined;
+    }
+
+    const timeout = setTimeout(() => setFontLoadTimedOut(true), 2500);
+    return () => clearTimeout(timeout);
+  }, [fontsLoaded]);
 
   const handleSignIn = async (nextUser: GalleryUser) => {
     await saveUser(nextUser);
@@ -44,13 +64,7 @@ export default function App() {
     setUser(null);
   };
 
-  const handleToggleTheme = () => {
-    const nextTheme = themePreference === 'dark' ? 'light' : 'dark';
-    setThemePreference(nextTheme);
-    void saveThemePreference(nextTheme);
-  };
-
-  if (!isReady) {
+  if (!isReady || (!fontsLoaded && !fontLoadTimedOut)) {
     return (
       <SafeAreaProvider>
         <View style={[styles.loading, { backgroundColor: theme.colors.background }]}>
@@ -62,11 +76,10 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style={themePreference === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style="light" />
       <AppNavigator
         onSignIn={handleSignIn}
         onSignOut={handleSignOut}
-        onToggleTheme={handleToggleTheme}
         themePreference={themePreference}
         user={user}
       />
