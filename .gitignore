@@ -24,6 +24,8 @@ artifacts/
 playstore-assets/*
 !playstore-assets/production-v4-wow/
 !playstore-assets/production-v4-wow/**
+scripts/create_*video*.py
+scripts/create_*trailer*.py
 
 # Environment files
 .env
