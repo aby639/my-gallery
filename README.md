@@ -1,161 +1,100 @@
 # MemoLens
 
-MemoLens is a private, local-first memory gallery for photos that need context, feeling, and a little more story.
+**Save the photo. Keep the feeling.**
 
-Save a photo from your camera or library, add a typed or dictated caption, record an optional private voice note, choose a mood, add tags, then find the memory by what it meant instead of scrolling through a crowded camera roll.
+A local-first photo journal built with Expo and React Native. Keep a photo with its caption, mood, tags and an optional voice note, then search for the story behind it.
 
-## Why It Exists
+**Status: personal use and testing. Google Play production work is paused as of 11 September 2026.** The store listing has been saved, but public release and production access are not approved. This repository update does not change installed apps or publish an EAS update.
 
-Most gallery apps store everything. MemoLens is for the smaller set of images you actually need to remember: receipts, whiteboards, screenshots, study material, visual references, documents, and personal moments.
+## App Demo
 
-## Features
+[![Watch the MemoLens app walkthrough](playstore-assets/2026-09-memolens/video/poster.png)](https://www.youtube.com/watch?v=bV9s-qFNM9c)
 
-- Google sign-in on Web, Android, and iOS.
-- Add photos from camera or photo library without forced cropping.
-- Type captions or dictate them with speech recognition.
-- Record private voice notes and replay them from the memory detail screen.
-- Add moods, tags, and favorites.
-- Search memories by caption, mood, tag, or source.
-- Store captions, voice notes, profile state, theme, and native image copies locally.
-- Edit captions, voice notes, moods, tags, and favorite state after saving.
-- Share saved images through the native share sheet with the actual image file on mobile.
-- Toggle light and dark mode.
-- Manage local data, sign-out, privacy, and release info from Settings.
-- Receive compatible UI/JavaScript updates through EAS Update.
+[Watch on YouTube](https://www.youtube.com/watch?v=bV9s-qFNM9c) | [Download the MP4](https://raw.githubusercontent.com/aby639/my-gallery/main/playstore-assets/2026-09-memolens/video/MemoLens-App-Demo-1080p.mp4) | [Captions](playstore-assets/2026-09-memolens/video/MemoLens-captions.srt)
+
+The 43-second, 1080p walkthrough shows the actual app's web renderer: browsing memories, adding a photo and caption, choosing a mood and tags, saving, and searching. It uses demonstration data, synthetic narration and a locally generated instrumental bed. Native microphone recording is described, not demonstrated as a successful web recording. See [media provenance and limits](playstore-assets/2026-09-memolens/README.md).
 
 ## Screens
 
-- MemoLens onboarding
-- Memories home
-- Create Memory
-- Memory detail
-- Voice memory playback
-- Settings
-- Share flow
+<table>
+  <tr>
+    <th>Collection</th>
+    <th>Photo story</th>
+    <th>Moods and voice</th>
+    <th>Search</th>
+  </tr>
+  <tr>
+    <td><img src="playstore-assets/2026-09-memolens/phone/01-collection.png" width="210" alt="MemoLens saved photo collection" /></td>
+    <td><img src="playstore-assets/2026-09-memolens/phone/02-photo-story.png" width="210" alt="Creating a memory with a photo and caption" /></td>
+    <td><img src="playstore-assets/2026-09-memolens/phone/03-moods-voice.png" width="210" alt="Mood and voice-note controls in MemoLens" /></td>
+    <td><img src="playstore-assets/2026-09-memolens/phone/04-search.png" width="210" alt="Searching saved memories" /></td>
+  </tr>
+</table>
 
-Store copy and launch notes are tracked in [Play Store listing draft](docs/play-store-listing-draft.md).
+These compositions contain real web-app captures, not iPhone mockups or generated UI. The [media pack](playstore-assets/2026-09-memolens/README.md) also includes separately captured tablet viewports, the unchanged approved icon and the new feature graphic. Compare the captures against native Android devices before a future store submission.
 
-## Tech Stack
+## What Works
 
-- Expo SDK 54
-- React Native
-- TypeScript
-- React Navigation
-- AsyncStorage
-- Expo Image Picker
-- Expo Audio
-- Expo Speech Recognition
-- Expo Sharing
-- React Native Google Sign-In
-- Expo AuthSession for Web OAuth
-- EAS Build and EAS Update
+- Start privately without signing in, or use configured Google sign-in.
+- Add a photo from the camera or library without a forced crop.
+- Write a caption or use device-supported speech recognition for dictation.
+- Record and replay voice notes in the native Android/iOS build.
+- Organise memories with moods, custom mood labels, tags and favourites.
+- Search captions, moods and tags; filter favourites and memories with voice notes.
+- Edit or delete memories and share saved images through the native share sheet.
+- View local storage information, clear local memories and sign out from Settings.
 
-## Getting Started
+The current interface is dark. Light-mode switching, cloud backup/sync, OCR, AI captions, biometric locking and branded share cards are not current features.
 
-Install dependencies:
+## Storage And Platform Limits
 
-```bash
-npm install
-```
+Memories are stored on the device. Google sign-in does not back up or synchronise the collection, and signing out does not erase it. Treat clearing app data or uninstalling as potentially destructive; there is no in-app backup/export workflow yet.
 
-Create your local environment file:
+Google authentication and the device's speech service may use the network. Local-first storage is not a claim that every feature works offline or that speech never leaves the device. Voice-note recording is unavailable in the web preview. Native camera, microphone, sharing and sign-in require testing in a configured native build, not just a browser preview.
 
-```bash
-copy .env.example .env
-```
+## Development
 
-Add Google OAuth client IDs:
+The app uses Expo SDK 54, React Native 0.81, React 19 and TypeScript, with React Navigation, AsyncStorage, Expo Image Picker, Expo Audio, Expo Speech Recognition, Expo Sharing and Google Sign-In. Dependencies are recorded in [package.json](package.json) and the lockfile.
 
-```bash
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your-web-client-id
-EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=your-ios-client-id
-EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=your-android-client-id
-EXPO_PUBLIC_PRIVACY_POLICY_URL=your-hosted-policy-url
-```
-
-Start Expo:
+Install the locked dependencies:
 
 ```bash
-npm start
+npm ci
 ```
 
-Run Android:
+On Windows PowerShell, create the local environment file:
 
-```bash
-npm run android
+```powershell
+Copy-Item .env.example .env
 ```
 
-Run Web:
+Configure the Google OAuth client IDs and hosted privacy-policy URL listed in [.env.example](.env.example). Do not commit `.env`, credentials or signing keys. The `EXPO_PUBLIC_*` values are bundled into the client and must never contain secrets; see [Expo's environment-variable guidance](https://docs.expo.dev/guides/environment-variables/). Use **Start privately** when Google sign-in has not been configured.
 
-```bash
-npm run web
-```
+| Command | Purpose |
+| --- | --- |
+| `npm start` | Start Expo development server |
+| `npm run android` | Build/run Android with the native toolchain |
+| `npm run ios` | Build/run iOS on macOS with Xcode |
+| `npm run web` | Start the web preview |
+| `npm test` | Run Jest tests |
+| `npm run typecheck` | Check TypeScript |
 
-## Google OAuth Notes
+### Google Sign-In
 
-Use these app identifiers when creating OAuth clients:
+Android package and iOS bundle identifier: `com.ablespace.mygallery`.
 
-- Android package: `com.ablespace.mygallery`
-- iOS bundle ID: `com.ablespace.mygallery`
-- Web local origin: localhost on port `8081`
+Android OAuth configuration must match the certificate used to sign the installed build. Debug, EAS and Google Play app-signing certificates can differ. See the platform checks in [authConfig.ts](src/auth/authConfig.ts) and the native implementation in [nativeGoogleSignIn.ts](src/auth/nativeGoogleSignIn.ts).
 
-For Android, the OAuth client must include the SHA-1 certificate for the build being tested. Development/debug builds, EAS builds, and Play Store app-signing builds can have different SHA-1 values. If Google sign-in starts failing after a Play Store upload, add the Play app-signing SHA-1 to the Android OAuth client.
+## Release Notes
 
-## Quality Checks
+The checked-in app version is **1.2.3**, with Android `versionCode` **15** in [app.json](app.json). [eas.json](eas.json) uses remote version management and production auto-increment, so a future EAS build may have a different build number. Native changes also need a runtime-compatibility review before an OTA update; see [Expo runtime versions](https://docs.expo.dev/eas-update/runtime-versions/).
 
-Run tests:
+Publication is on hold, not cancelled. Existing installed builds remain available to their owners. There is no public Play Store download link in this README because production has not been released.
 
-```bash
-npm test
-```
+- [Release status and resumption checklist](docs/release-status.md)
+- [Build/update workflow and product roadmap](docs/release-and-product-plan.md)
+- [Current store listing copy](docs/play-store-listing-draft.md)
+- [Approved demo and current image pack](playstore-assets/2026-09-memolens/README.md)
+- [Changelog](CHANGELOG.md)
 
-Run TypeScript:
-
-```bash
-npm run typecheck
-```
-
-## Release Workflow
-
-Preview Android build:
-
-```bash
-npm run build:android:preview
-```
-
-Production Android App Bundle:
-
-```bash
-npm run build:android:production
-```
-
-Production over-the-air update:
-
-```bash
-npm run update:production -- --message "Short update note"
-```
-
-EAS Update can ship compatible JavaScript, UI, copy, and asset changes to installed builds with the same runtime version. Build and upload a new APK/AAB when native code, permissions, native packages, Expo SDK version, Google native auth setup, app icon, package config, or runtime version changes.
-
-## Product Roadmap
-
-Near-term:
-
-- Share cards that combine photo, caption, date, and MemoLens branding.
-- Date/source search filters.
-- Import/export backup.
-- Closed-test feedback capture.
-
-Later:
-
-- OCR search inside images.
-- AI caption suggestions.
-- Biometric lock.
-- Google Drive backup/export.
-- Crash reporting and analytics.
-
-## Privacy Direction
-
-MemoLens is local-first. Images, captions, voice notes, moods, and tags are stored on the device unless the user chooses to share them. Google Sign-In is used for identity, and camera, photo library, microphone, and speech recognition permissions are requested only when the related feature is used.
-
-A starter policy draft lives in [Privacy policy draft](docs/privacy-policy-draft.md).
+The older `production-v4-wow` assets are retained as an archive, not the current upload pack. Unfinished video experiments remain excluded.

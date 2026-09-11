@@ -20,10 +20,12 @@ android/.kotlin/
 android/app/src/main/assets/adi-registration.properties
 artifacts/
 
-# Keep the final Play Store image pack, ignore draft exports and video experiments
+# Keep curated store packs; exclude raw exports and unfinished video experiments
 playstore-assets/*
 !playstore-assets/production-v4-wow/
 !playstore-assets/production-v4-wow/**
+!playstore-assets/2026-09-memolens/
+!playstore-assets/2026-09-memolens/**
 scripts/create_*video*.py
 scripts/create_*trailer*.py
 

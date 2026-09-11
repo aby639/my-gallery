@@ -1,5 +1,13 @@
 # Changelog
 
+## Repository Update - 11 September 2026
+
+- Added the approved 1080p app walkthrough, poster, captions and YouTube link.
+- Added the September feature graphic, approved icon, four phone compositions and eight tablet viewport captures, with provenance and file checksums.
+- Updated the README and store copy to match the current app; removed outdated light-mode claims.
+- Recorded Google Play production work as paused, with the closed-testing and native-device checks still outstanding.
+- Kept previous image assets as an archive and unfinished video experiments excluded. No application code, version bump, native build, EAS update or Play submission is part of this update.
+
 ## 1.2.0 - 5 June 2026
 
 - Rebranded the app experience to MemoLens with updated app icon, splash art, privacy copy, and Play Store docs.

@@ -1,0 +1,126 @@
+{
+  "preparedAt": "2026-09-11",
+  "captureSourceCommit": "64e0766",
+  "assets": [
+    {
+      "path": "Poppins-LICENSE.txt",
+      "bytes": 4385,
+      "sha256": "6be04893d770899a015649c7aa3b582f871b272f8747a92b78b17c3e5c8b2573"
+    },
+    {
+      "path": "app-icon-512.png",
+      "bytes": 44192,
+      "sha256": "5ba775ef9e12bb433c115c0c84764f2b1eb87be39cb4a89c928f8cd8374ec572",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "path": "feature-graphic-1024x500.png",
+      "bytes": 935931,
+      "sha256": "713163b1cec9a51462c77fec155d93ae8a0ff437724063c9d1e835e05e45d43e",
+      "width": 1024,
+      "height": 500
+    },
+    {
+      "path": "phone/01-collection.png",
+      "bytes": 1076641,
+      "sha256": "ec1373f2cb934c533fb700d21a35399e59c98ad7257ca59b3afdd8a10597881e",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "path": "phone/02-photo-story.png",
+      "bytes": 1159207,
+      "sha256": "b8b5dad0660d3c170e066e22b636e60df3427d0b446bce1c75180adf042f8975",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "path": "phone/03-moods-voice.png",
+      "bytes": 333273,
+      "sha256": "14553c4b4728fa54935891ac80fc02d814ada007b2933e6fda08cc74881a811c",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "path": "phone/04-search.png",
+      "bytes": 699902,
+      "sha256": "a8563e7e27f0efe6a2687a80ddaff4ea043ad07dd6047641ef1d920449c20c99",
+      "width": 1080,
+      "height": 1920
+    },
+    {
+      "path": "tablet-10-inch/01-collection.png",
+      "bytes": 1928155,
+      "sha256": "07db27d873ee154bdb210b8db6a246ed5f22adb2126304781754e270f1d4086d",
+      "width": 1620,
+      "height": 2880
+    },
+    {
+      "path": "tablet-10-inch/02-new-memory.png",
+      "bytes": 2003991,
+      "sha256": "c2f8979da8ad2e93f9f24ab92f9391296399595f35a471df013ea8b228546b22",
+      "width": 1620,
+      "height": 2880
+    },
+    {
+      "path": "tablet-10-inch/03-memory-detail.png",
+      "bytes": 1395302,
+      "sha256": "4c20e8c5b4fee5d2c877838bc8a61e947c4671c9a83b64bde757c2aced07e32c",
+      "width": 1620,
+      "height": 2880
+    },
+    {
+      "path": "tablet-10-inch/04-browse-search.png",
+      "bytes": 2032343,
+      "sha256": "1d30968573ec71f62832105aa634d94e9235361f11c3b5bd7f8ec1f0b3f31bf9",
+      "width": 1620,
+      "height": 2880
+    },
+    {
+      "path": "tablet-7-inch/01-collection.png",
+      "bytes": 1528638,
+      "sha256": "03307ab56688a591ae58e585c33a1e8c0f242f18ee66d0664aca8f7fb70eb7a2",
+      "width": 1296,
+      "height": 2304
+    },
+    {
+      "path": "tablet-7-inch/02-new-memory.png",
+      "bytes": 1549509,
+      "sha256": "db59a80267b11003dbb5d2d3e9b83819d1334ec4b54a1d78659eda3373db6e69",
+      "width": 1296,
+      "height": 2304
+    },
+    {
+      "path": "tablet-7-inch/03-memory-detail.png",
+      "bytes": 1054844,
+      "sha256": "3cf5005a28ae90028e90aa7829e01df141ee3a666364f7fbb3b84e68a643a523",
+      "width": 1296,
+      "height": 2304
+    },
+    {
+      "path": "tablet-7-inch/04-browse-search.png",
+      "bytes": 1650022,
+      "sha256": "ad19832165a63b12a5f2a1d63b1453d51e97a5f514276a553cd6e6bf29e037e7",
+      "width": 1296,
+      "height": 2304
+    },
+    {
+      "path": "video/MemoLens-App-Demo-1080p.mp4",
+      "bytes": 12652721,
+      "sha256": "79ee31449638fef202f990c9c17835d3ad6281d9d8839e27b4ed537cde81192f"
+    },
+    {
+      "path": "video/MemoLens-captions.srt",
+      "bytes": 818,
+      "sha256": "3da358fd0f3601920c64aa2c6ea9050077d0bc5c0f0ce7ac7598eb434f1e5b52"
+    },
+    {
+      "path": "video/poster.png",
+      "bytes": 531948,
+      "sha256": "c6c821a2e7e4a1d06c7a032f31efcd46ca40c09621db7c83415cc1d2ea9ef8c6",
+      "width": 1920,
+      "height": 1080
+    }
+  ]
+}

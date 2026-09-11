@@ -1,4 +1,6 @@
-# MemoLens Play Store Listing Draft
+# MemoLens Store Listing Copy
+
+Current prepared copy, updated 11 September 2026. The supplied Play Console screenshots confirm the saved name and short description. This document is not a claim that every field below is live or approved. Production work is paused; see [release status](release-status.md).
 
 ## App Name
 
@@ -6,102 +8,47 @@ MemoLens
 
 ## Short Description
 
-Save photos with captions, moods, tags, and private search.
+Keep the story behind your photos with captions, voice notes, moods and tags
 
 ## Full Description
 
-MemoLens is a private memory gallery for the photos you want to remember, explain, and find again.
+A photo captures the moment. MemoLens helps you remember the story behind it.
 
-Save a photo from your camera or library, add a typed or dictated caption, choose a mood, then search by what the moment meant instead of scrolling through a huge camera roll. MemoLens is local-first, so your saved images, captions, moods, and tags stay on your device unless you choose to share them.
+Bring together the photos you want to keep, the words that explain them and the voice notes that make them personal. From a weekend away to a useful study reference, give each memory a little more context.
 
-Use it for:
+SAVE A PHOTO AND ITS STORY
+Choose a photo from your library or take one with your camera. Write a caption, or use dictation to turn your spoken words into text.
 
-- Study notes, whiteboards, and screenshots.
-- Receipts, warranty photos, and documents.
-- Creative references and quick visual ideas.
-- Personal moments with searchable captions.
+KEEP A VOICE NOTE
+Record a voice note alongside a memory and listen again from its detail screen. Caption dictation and saved voice recordings are separate features, so you can choose what to keep.
 
-Key features:
+ORGANISE YOUR WAY
+Choose a mood, create your own mood label and add tags. Mark favourites so the memories you return to are easier to find.
 
-- Google sign-in.
-- Camera and photo library import without forced cropping.
-- Typed or voice captions.
-- Mood and tag organization.
-- Fast memory search.
-- Favorites and quick filters.
-- Offline local storage.
-- Settings for local data and appearance.
-- Dark and light mode.
-- Image sharing with the saved image file.
+FIND WHAT YOU REMEMBER
+Search your captions, moods and tags. Filter your collection to revisit favourites or memories with voice notes.
 
-MemoLens is not trying to replace your whole photo library. It is built for the smaller set of images that need a story attached.
+MAKE CHANGES LATER
+Edit saved memories as the story grows. Update captions, moods and tags, replace a voice note or remove a memory you no longer need.
 
-## Screenshot Checklist
+START WITHOUT AN ACCOUNT
+Choose Start privately to use MemoLens without signing in. Google sign-in is also available. Your saved collection is stored locally on this device; signing in does not sync it to other devices or provide cloud backup.
 
-1. MemoLens onboarding with Google sign-in.
-2. Empty memories screen with Create Memory action.
-3. Create Memory screen with selected photo, caption, mood, and tags.
-4. Memories home with saved cards, stats, search, favorites, moods, and tag filters.
-5. Memory detail with edit, favorite, share, and delete actions.
-6. Native Android share sheet showing an image preview.
-7. Settings screen with local-first privacy and storage actions.
-8. Dark mode and light mode examples.
+Camera, photo library and microphone access are used for the features you choose. Dictation availability depends on your device and speech service.
 
-## Feature Graphic Idea
+Support: bmwdeveloper369@gmail.com
 
-Text:
+## Visual Assets
 
-Save the photo. Keep the feeling.
+Use [the September media pack](../playstore-assets/2026-09-memolens/README.md). It includes the approved icon, feature graphic, four phone images, two four-image tablet sets and the approved video.
 
-Visual:
+Preview video: [MemoLens app walkthrough](https://www.youtube.com/watch?v=bV9s-qFNM9c).
 
-A clean phone mockup showing a memory card with a photo, caption, mood, and search field.
+The feature graphic is AI-generated illustrative artwork. The screenshots show the app's web renderer with demonstration records. Native-device comparison and the appropriate asset declarations remain part of any future release review.
 
-## Privacy Policy Draft Points
+The privacy-policy URL shown in the saved Console changes is [the hosted MemoLens policy](https://my-gallery-privacy.netlify.app). Recheck its content, availability and consistency with SDK behaviour before resuming publication. This listing copy is not a replacement for the Data safety questionnaire.
 
-This app currently:
+## References
 
-- Stores saved images, captions, moods, tags, and favorites locally on the device.
-- Uses Google Sign-In for account identity.
-- Does not upload memory content to a custom backend.
-- Uses microphone and speech recognition only when the user starts caption dictation.
-- Uses camera and photo library only when the user chooses to create a memory.
-
-Suggested app config:
-
-```env
-EXPO_PUBLIC_PRIVACY_POLICY_URL=https://your-hosted-policy-url
-```
-
-## Data Safety Draft
-
-Data collected:
-
-- Name, email, and profile photo from Google Sign-In.
-
-Data handled locally:
-
-- User-added images.
-- User-written or dictated captions.
-- Moods, tags, favorites.
-- Theme preference.
-
-Data sharing:
-
-- Images are shared only when the user taps share and chooses a target app.
-
-Security notes:
-
-- Add biometric lock before marketing the app for sensitive/private storage.
-- Add cloud backup only after privacy policy and account deletion flows are ready.
-
-## First Production Scope
-
-Ship these before Play Store production:
-
-- Hosted privacy policy URL.
-- Accessibility pass.
-- Crash reporting.
-- At least 12 closed-test opted-in testers for 14 days, per current Play Console requirement for new personal developer accounts.
-
-Keep OCR, AI captions, and backup as post-launch upgrades.
+- Implementation: [AddItemScreen](../src/screens/AddItemScreen.tsx), [SearchMemoriesScreen](../src/screens/SearchMemoriesScreen.tsx), [SettingsScreen](../src/screens/SettingsScreen.tsx) and [voice recorder](../src/voice/useVoiceNoteRecorder.ts).
+- [Google Play preview asset guidance](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en).

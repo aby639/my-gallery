@@ -1,98 +1,51 @@
 # MemoLens Release And Product Plan
 
-## The Release Model
+**Production work is paused as of 11 September 2026.** These are reference commands for a future release, not actions to run during the pause. See [the dated status record](release-status.md).
 
-Use both Play Store updates and EAS Update. They solve different problems.
+## Build And Update Model
 
-- Play Store is the main public distribution channel. Users install from Play once, get trusted updates, and do not deal with APK files.
-- EAS Update is for fast JavaScript, UI, copy, styling, and compatible asset fixes after a Play Store or preview build is already installed.
-- New APK/AAB builds are still required for native changes: permissions, Expo SDK upgrades, native dependencies, Google Sign-In native setup, app icons, package identifiers, version codes, and runtime version changes.
+Google Play distributes reviewed native app builds. EAS Update distributes compatible JavaScript and assets to an installed build on the matching channel/runtime. A GitHub push alone does neither.
 
-## Normal Workflow
+Native dependencies, permissions, SDK changes and other native configuration changes require a new native build. Runtime versions must distinguish incompatible native builds; this project currently uses a fixed Android runtime string in `app.json`, so review it explicitly when native code changes. See [Expo runtime compatibility](https://docs.expo.dev/eas-update/runtime-versions/).
 
-1. Build locally and test on emulator/device.
-2. Push code to GitHub.
-3. Create a preview build for quick tester checks.
-4. Publish compatible UI fixes with EAS Update on the `preview` or `production` channel.
-5. Build a production Android App Bundle for Play Store.
-6. Release first through Play internal testing, then closed testing, then production.
-7. Use EAS Update for safe UI/JS updates between Play Store releases.
-8. Use Play Store releases for native or major updates.
+| Command | Effect when deliberately run |
+| --- | --- |
+| `npm run build:android:preview` | Request an EAS internal-distribution preview build |
+| `npm run build:android:production` | Request a production-profile Android App Bundle |
+| `npm run update:preview -- --message "Update note"` | Publish an update to the preview channel |
+| `npm run update:production -- --message "Update note"` | Publish an update to installed compatible production-channel builds |
 
-## Commands
+The EAS profile named `production` is a build/update configuration, not evidence of Play Store production approval. Cloud builds may consume account quota. No build or update is needed just to commit documentation and media.
 
-Preview APK for testers:
+## Before A Future Release
 
-```bash
-npm run build:android:preview
-```
+1. Test the current code on a real Android device, including camera, dictation, voice recording/playback, persistence, sharing and sign-in.
+2. Run `npm test` and `npm run typecheck`; review platform-specific failures rather than relying on web screenshots.
+3. Check runtime compatibility, package identity, signing and the Play app-signing OAuth certificate.
+4. Review the store text, data-safety answers, privacy policy and app-access instructions against actual app behaviour.
+5. Compare the current marketing captures against native phone/tablet layouts.
+6. Resume the closed-test process in [release-status.md](release-status.md) before seeking production access.
 
-Production App Bundle for Google Play:
+## Repository Boundaries
 
-```bash
-npm run build:android:production
-```
+Commit source, configuration, lockfiles, documentation and the curated media pack. Keep secrets, signing keys, personal memories, tester email lists, account screenshots, dependencies, build output and raw video intermediates out of Git.
 
-Production OTA update:
+The current pack is [2026-09-memolens](../playstore-assets/2026-09-memolens/README.md). `production-v4-wow` is an older archive. Do not remove local draft videos merely to keep them out of Git; the ignore rules already exclude them.
 
-```bash
-npm run update:production -- --message "Short update note"
-```
+## Product Direction
 
-## GitHub Repo Checklist
+MemoLens is a small photo journal, not a replacement for a cloud photo library. Captions, moods, tags and voice notes add context to personal memories, study references and useful images.
 
-- Keep `.env` private and never commit OAuth client secrets.
-- Commit `README.md`, `app.json`, `eas.json`, `package.json`, `package-lock.json`, `src/`, `assets/`, `docs/`, and `android/`.
-- Do not commit `node_modules/`, `dist/`, `.expo/`, logs, screenshots, or local APK output.
-- Use GitHub issues for product ideas and bugs.
-- Use GitHub releases only for preview APKs if you want direct tester downloads outside Play Store.
+Candidate improvements, not commitments or implemented features:
 
-## Play Store Checklist
+- Backup/export and restore, with clear handling of local data loss.
+- Accessibility, larger-text and native tablet layout checks.
+- Date/source search filters and branded share cards.
+- Optional OCR, caption suggestions and biometric locking.
+- Optional crash reporting only after reviewing consent and privacy implications.
 
-- Create the app with package name `com.ablespace.mygallery`.
-- Upload Android App Bundles, not only APKs.
-- Keep Play App Signing enabled.
-- Add the Play app-signing SHA-1 certificate to the Google Cloud Android OAuth client.
-- Add privacy policy, app access instructions, content rating, data safety, screenshots, icon, feature graphic, and store description.
-- Use internal testing for quick verification.
-- For production access on a new personal developer account, run a closed test with at least 12 opted-in testers for at least 14 days, then apply for production access.
+## References
 
-## Product Positioning
-
-MemoLens should not compete with Google Photos as a full replacement. The strongest niche is:
-
-> A private, local-first memory gallery where every saved image has a searchable caption, mood, and tags.
-
-That makes the app useful for:
-
-- Students saving whiteboards, diagrams, notes, and screenshots.
-- People saving receipts, documents, and warranty photos.
-- Creators collecting visual references with voice captions.
-- Anyone who wants a small private image notebook instead of a huge cloud gallery.
-
-## Product Roadmap
-
-Phase 1, make the current app feel complete:
-
-- Share cards that combine photo, caption, date, and MemoLens branding.
-- Search filters for camera/library/date.
-- Import/export backup.
-- Empty-state sample tips.
-- Accessibility pass and larger text checks.
-
-Phase 2, make it genuinely useful:
-
-- OCR search inside images.
-- AI-generated caption suggestions.
-- Biometric lock.
-- Google Drive backup/export.
-- Import/export ZIP.
-- Reminder or pinned collections.
-
-Phase 3, make it Play Store-ready:
-
-- Crash reporting.
-- Analytics for core flows.
-- Hosted privacy policy URL.
-- Account deletion or local account reset flow.
-- Closed-test feedback workflow.
+- [EAS Build introduction](https://docs.expo.dev/build/introduction/)
+- [EAS Update runtime versions](https://docs.expo.dev/eas-update/runtime-versions/)
+- [Play Console testing setup](https://support.google.com/googleplay/android-developer/answer/9845334?hl=en)

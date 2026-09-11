@@ -1,0 +1,39 @@
+1
+00:00:00,450 --> 00:00:04,100
+Some photos deserve more than a place in the camera roll.
+
+2
+00:00:05,950 --> 00:00:11,600
+MemoLens keeps the photo, caption, mood, tags, and voice notes together.
+
+3
+00:00:12,650 --> 00:00:15,230
+Add a photo from your camera or gallery,
+
+4
+00:00:15,230 --> 00:00:19,150
+then type the story, or tap the mic and speak naturally.
+
+5
+00:00:22,450 --> 00:00:26,350
+If the real sound matters, record a private voice note too.
+
+6
+00:00:27,950 --> 00:00:31,870
+Search by caption, mood, or tag, mark favorites.
+
+7
+00:00:33,950 --> 00:00:38,050
+In this version, memories stay on your device until you delete them.
+
+8
+00:00:38,250 --> 00:00:39,370
+MemoLens.
+
+9
+00:00:39,600 --> 00:00:40,920
+Save the photo.
+
+10
+00:00:41,100 --> 00:00:42,580
+Keep the feeling.
